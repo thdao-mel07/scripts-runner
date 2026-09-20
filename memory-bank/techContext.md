@@ -58,6 +58,9 @@ vsce package
 ## Publish Marketplace
 - publisher: `dothanhdao` (đã set trong package.json)
 - Extension ID trên store: `dothanhdao.scripts-sidebar`
+- GitHub repo (public): https://github.com/thdao-mel07/scripts-runner
+  (gh account: thdao-mel07). Đã set repository/bugs/homepage.
+- Ảnh demo: images/demo.png -> vsce tự đổi thành raw URL khi package.
 - Lệnh: `npx @vscode/vsce login dothanhdao` rồi `npx @vscode/vsce publish`
   (token do user tự nhập, có scope Marketplace > Manage).
 - Update version sau: `npx @vscode/vsce publish patch|minor|major`.
