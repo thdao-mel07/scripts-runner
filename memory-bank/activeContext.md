@@ -1,9 +1,9 @@
 # Active Context
 
 ## Đang làm gì
-Đã hoàn thành v0.2.0: stop/trạng thái đang chạy, pin/favorites.
-(Nhóm theo prefix VÀ QuickPick/Search đã GỠ theo yêu cầu user.)
-Chờ user test F5.
+ĐÃ PUBLISH v0.2.0 lên VS Code Marketplace thành công (2026-09-20):
+dothanhdao.scripts-sidebar. Code trên GitHub thdao-mel07/scripts-runner.
+Tính năng: run (terminal/silent), stop/trạng thái, pin/favorites, thu gọn.
 
 ## Thay đổi gần nhất (2026-09-18)
 - Tạo toàn bộ scaffold extension: package.json, tsconfig, esbuild.js,

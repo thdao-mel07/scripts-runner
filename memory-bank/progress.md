@@ -44,10 +44,15 @@
 - [x] README viết lại chuẩn Marketplace (badges shields.io, Features theo
   mục, Extension Settings, Known Issues, Release Notes) + CHANGELOG.md.
 
+- [x] displayName "Scripts Runner" bị trùng -> đổi "Scripts Runner Sidebar"
+- [x] ĐÃ PUBLISH LÊN MARKETPLACE: dothanhdao.scripts-sidebar v0.2.0 (2026-09-20)
+  URL: https://marketplace.visualstudio.com/items?itemName=dothanhdao.scripts-sidebar
+- [x] Thêm publish scripts (publish:patch/minor/major) + vsce devDependency
+- [x] Ảnh demo images/demo.png hiển thị qua raw GitHub URL
+
 ## Todo
-- [ ] User tự chạy: npx @vscode/vsce login dothanhdao && publish
-- [ ] (Nên có) screenshot/GIF demo bằng URL tuyệt đối -> cần đưa code lên
-  GitHub rồi trỏ raw URL (đã để sẵn chỗ comment trong README)
+- [ ] Lần update sau: sửa code -> commit -> `npm run publish:patch` ->
+  `git push --follow-tags` (login đã lưu, không cần login lại)
 - [ ] (Cân nhắc) recent scripts, run+debug, publish Marketplace
 
 ## Known Bugs
