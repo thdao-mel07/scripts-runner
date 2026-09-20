@@ -187,6 +187,7 @@
     "publish:patch": "vsce publish patch",
     "publish:minor": "vsce publish minor",
     "publish:major": "vsce publish major",
+    "ovsx:namespace": "ovsx create-namespace dothanhdao",
     "publish:ovsx": "ovsx publish"
   },
   "devDependencies": {
