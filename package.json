@@ -186,13 +186,15 @@
     "publish": "vsce publish",
     "publish:patch": "vsce publish patch",
     "publish:minor": "vsce publish minor",
-    "publish:major": "vsce publish major"
+    "publish:major": "vsce publish major",
+    "publish:ovsx": "ovsx publish"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
     "@types/vscode": "^1.85.0",
     "@vscode/vsce": "^3.2.0",
     "esbuild": "^0.20.0",
+    "ovsx": "^0.10.0",
     "sharp": "^0.35.4",
     "typescript": "^5.4.0"
   }
