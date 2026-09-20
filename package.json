@@ -1,6 +1,6 @@
 {
   "name": "scripts-sidebar",
-  "displayName": "Scripts Runner",
+  "displayName": "Scripts Runner Sidebar",
   "description": "Run npm, yarn, and pnpm scripts from the sidebar with one click.",
   "version": "0.2.0",
   "publisher": "dothanhdao",
