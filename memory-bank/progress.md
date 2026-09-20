@@ -50,9 +50,16 @@
 - [x] Thêm publish scripts (publish:patch/minor/major) + vsce devDependency
 - [x] Ảnh demo images/demo.png hiển thị qua raw GitHub URL
 
+- [x] ĐÃ PUBLISH LÊN OPEN VSX: dothanhdao.scripts-sidebar v0.2.0 (2026-09-20)
+  URL: https://open-vsx.org/extension/dothanhdao/scripts-sidebar
+  (để hiện trong Antigravity/Cursor/VSCodium). Có script ovsx:namespace +
+  publish:ovsx (cần -- -p <token> mỗi lần vì Open VSX không lưu login).
+
 ## Todo
-- [ ] Lần update sau: sửa code -> commit -> `npm run publish:patch` ->
-  `git push --follow-tags` (login đã lưu, không cần login lại)
+- [ ] Lần update sau publish CẢ 2 store:
+  - MS: `npm run publish:patch` (login đã lưu)
+  - Open VSX: `npm run publish:ovsx -- -p <token>`
+  - rồi `git push --follow-tags`
 - [ ] (Cân nhắc) recent scripts, run+debug, publish Marketplace
 
 ## Known Bugs
