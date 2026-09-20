@@ -1,0 +1,193 @@
+{
+  "name": "scripts-sidebar",
+  "displayName": "Scripts Runner",
+  "description": "Run npm, yarn, and pnpm scripts from the sidebar with one click.",
+  "version": "0.2.0",
+  "publisher": "dothanhdao",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "npm",
+    "scripts",
+    "yarn",
+    "pnpm",
+    "sidebar",
+    "runner"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "icon": "resources/icon-256.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thdao-mel07/scripts-runner.git"
+  },
+  "bugs": {
+    "url": "https://github.com/thdao-mel07/scripts-runner/issues"
+  },
+  "homepage": "https://github.com/thdao-mel07/scripts-runner#readme",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "scriptSidebar",
+          "title": "Scripts Runner",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "scriptSidebar": [
+        {
+          "id": "scriptView",
+          "name": "package.json",
+          "icon": "resources/icon.svg",
+          "contextualTitle": "Scripts Runner"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "scriptView",
+        "contents": "Không tìm thấy scripts.\nMở một thư mục có file package.json chứa mục \"scripts\" để bắt đầu.\n[Mở thư mục](command:workbench.action.files.openFolder)"
+      }
+    ],
+    "commands": [
+      {
+        "command": "scriptsSidebar.runScript",
+        "title": "Chạy Script",
+        "category": "Scripts Runner",
+        "icon": "$(play)"
+      },
+      {
+        "command": "scriptsSidebar.runScriptSilent",
+        "title": "Chạy Script (nền, hiện kết quả qua thông báo)",
+        "category": "Scripts Runner",
+        "icon": "$(run-below)"
+      },
+      {
+        "command": "scriptsSidebar.stopScript",
+        "title": "Dừng Script",
+        "category": "Scripts Runner",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "scriptsSidebar.pinScript",
+        "title": "Ghim lên Favorites",
+        "category": "Scripts Runner",
+        "icon": "$(star-empty)"
+      },
+      {
+        "command": "scriptsSidebar.unpinScript",
+        "title": "Bỏ ghim",
+        "category": "Scripts Runner",
+        "icon": "$(star-full)"
+      },
+      {
+        "command": "scriptsSidebar.refresh",
+        "title": "Làm mới",
+        "category": "Scripts Runner",
+        "icon": "$(refresh)"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "scriptsSidebar.runScript",
+          "when": "false"
+        },
+        {
+          "command": "scriptsSidebar.runScriptSilent",
+          "when": "false"
+        },
+        {
+          "command": "scriptsSidebar.stopScript",
+          "when": "false"
+        },
+        {
+          "command": "scriptsSidebar.pinScript",
+          "when": "false"
+        },
+        {
+          "command": "scriptsSidebar.unpinScript",
+          "when": "false"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "scriptsSidebar.refresh",
+          "when": "view == scriptView",
+          "group": "navigation@1"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "scriptsSidebar.runScript",
+          "when": "view == scriptView && viewItem =~ /^script(Pinned)?$/",
+          "group": "inline@1"
+        },
+        {
+          "command": "scriptsSidebar.stopScript",
+          "when": "view == scriptView && viewItem =~ /Running/",
+          "group": "inline@1"
+        },
+        {
+          "command": "scriptsSidebar.runScriptSilent",
+          "when": "view == scriptView && viewItem =~ /^script(Pinned)?$/",
+          "group": "inline@2"
+        },
+        {
+          "command": "scriptsSidebar.pinScript",
+          "when": "view == scriptView && viewItem =~ /^script(Running)?$/",
+          "group": "inline@3"
+        },
+        {
+          "command": "scriptsSidebar.unpinScript",
+          "when": "view == scriptView && viewItem =~ /Pinned/",
+          "group": "inline@3"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Scripts Runner",
+      "properties": {
+        "scriptsSidebar.packageManager": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "npm",
+            "yarn",
+            "pnpm"
+          ],
+          "default": "auto",
+          "description": "Trình quản lý gói dùng để chạy script. 'auto' sẽ tự phát hiện qua lockfile."
+        },
+        "scriptsSidebar.reuseTerminal": {
+          "type": "boolean",
+          "default": true,
+          "description": "Tái sử dụng terminal của từng script thay vì tạo terminal mới mỗi lần chạy."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "package": "node esbuild.js --production",
+    "lint": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "esbuild": "^0.20.0",
+    "sharp": "^0.35.4",
+    "typescript": "^5.4.0"
+  }
+}
