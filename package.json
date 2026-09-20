@@ -177,17 +177,33 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run package",
+    "//1_dev": "===== DEV / BUILD =====",
+    "//compile": "Build extension 1 lần ra dist/ (esbuild)",
     "compile": "node esbuild.js",
+    "//watch": "Build lại tự động mỗi khi sửa code (dùng khi F5 dev)",
     "watch": "node esbuild.js --watch",
+    "//package": "Build bản production (minify). vsce/ovsx tự gọi lệnh này khi publish",
     "package": "node esbuild.js --production",
+    "//lint": "Kiểm tra kiểu TypeScript, không xuất file (tsc --noEmit)",
     "lint": "tsc --noEmit",
+    "vscode:prepublish": "npm run package",
+
+    "//2_ms": "===== PUBLISH: MICROSOFT MARKETPLACE (VS Code chính hãng) =====",
+    "//vsce:package": "Chỉ đóng gói ra file .vsix (KHÔNG publish) — để cài local hoặc kiểm tra",
     "vsce:package": "vsce package",
+    "//publish": "Publish lên MS Marketplace với version HIỆN TẠI (không tự tăng). Cần login trước 1 lần: npx vsce login dothanhdao",
     "publish": "vsce publish",
+    "//publish:patch": "Tăng version 0.0.X (sửa lỗi nhỏ) rồi publish MS Marketplace",
     "publish:patch": "vsce publish patch",
+    "//publish:minor": "Tăng version 0.X.0 (thêm tính năng) rồi publish MS Marketplace",
     "publish:minor": "vsce publish minor",
+    "//publish:major": "Tăng version X.0.0 (thay đổi lớn) rồi publish MS Marketplace",
     "publish:major": "vsce publish major",
+
+    "//3_ovsx": "===== PUBLISH: OPEN VSX (Antigravity / Cursor / VSCodium) =====",
+    "//ovsx:namespace": "Tạo namespace 'dothanhdao' trên Open VSX (chỉ chạy 1 lần). Dùng: npm run ovsx:namespace -- -p <token>",
     "ovsx:namespace": "ovsx create-namespace dothanhdao",
+    "//publish:ovsx": "Publish lên Open VSX. Dùng: npm run publish:ovsx -- -p <token-open-vsx>",
     "publish:ovsx": "ovsx publish"
   },
   "devDependencies": {
