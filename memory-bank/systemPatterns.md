@@ -1,10 +1,18 @@
 # System Patterns
 
-## Cấu trúc thư mục
+## Cấu trúc thư mục (đã tách module - v0.3.0)
 ```
 extension/
 ├── src/
-│   └── extension.ts      # toàn bộ logic (activate/deactivate)
+│   ├── extension.ts      # mỏng: activate/deactivate + đăng ký command
+│   ├── logic.ts          # hàm THUẦN (pure) - có test, không import vscode
+│   ├── store.ts          # pin + alias (workspaceState)
+│   ├── running.ts        # map script đang chạy + status bar + kill
+│   ├── runner.ts         # detectPM + chạy terminal/silent + output channel
+│   ├── tree.ts           # ScriptItem + ScriptProvider + findPackageJsons
+│   └── codelens.ts       # CodeLens cho package.json
+├── test/
+│   └── logic.test.ts     # unit test (node:test + tsx)
 ├── resources/
 │   └── icon.svg          # icon Activity Bar
 ├── dist/                 # output esbuild (gitignored)
