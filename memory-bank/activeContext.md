@@ -1,9 +1,11 @@
 # Active Context
 
 ## Đang làm gì
-ĐÃ PUBLISH v0.2.0 lên VS Code Marketplace thành công (2026-09-20):
-dothanhdao.scripts-sidebar. Code trên GitHub thdao-mel07/scripts-runner.
-Tính năng: run (terminal/silent), stop/trạng thái, pin/favorites, thu gọn.
+v0.3.0 (2026-09-21): sửa 6 bug + thêm CodeLens (package.json), status bar
+running indicator, alias (rename script), guard silent cho script chạy dài,
+Output channel cho silent. Tách pure logic -> src/logic.ts + test (npm test,
+node:test + tsx). Đã cài vào Antigravity, chờ user test rồi publish 2 store.
+v0.2.0 đã publish MS Marketplace + Open VSX (dothanhdao.scripts-sidebar).
 
 ## Thay đổi gần nhất (2026-09-18)
 - Tạo toàn bộ scaffold extension: package.json, tsconfig, esbuild.js,

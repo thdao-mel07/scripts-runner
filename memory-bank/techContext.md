@@ -17,6 +17,12 @@
 ## Không dùng (vì là extension, không phải app RN)
 - Navigation / State management / Networking / UI library RN: KHÔNG áp dụng.
 
+## Test
+- Pure logic tách ra `src/logic.ts` (không import vscode).
+- Test: `npm test` = `node --import tsx --test test/*.test.ts` (node:test + tsx).
+- Silent mode dùng `spawn(cmd,{shell:true,detached:true})` + kill process
+  group `process.kill(-pid)` để dừng cả cây con.
+
 ## Key Dependencies
 - devDependencies: `@types/vscode`, `@types/node`, `esbuild`, `typescript`,
   `sharp` (chỉ dùng để xuất icon PNG từ SVG, không dùng runtime)
