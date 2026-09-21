@@ -55,11 +55,6 @@ export function firstLines(text: string, max = 200): string {
   return trimmed.replace(/\s+/g, " ");
 }
 
-/** Nhãn hiển thị: ưu tiên alias, không có thì dùng tên gốc */
-export function displayLabel(scriptName: string, alias?: string): string {
-  return alias && alias.trim() ? alias.trim() : scriptName;
-}
-
 /**
  * Tìm vị trí dòng (0-based) của từng script trong nội dung package.json.
  * Trả về Map<tên script, số dòng>. Dùng cho CodeLens.

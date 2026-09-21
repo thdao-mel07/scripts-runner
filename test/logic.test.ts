@@ -6,7 +6,6 @@ import {
   pickPackageManager,
   isLongRunningScript,
   firstLines,
-  displayLabel,
   findScriptLines,
 } from "../src/logic";
 
@@ -47,12 +46,6 @@ test("firstLines rút gọn và gộp khoảng trắng", () => {
   const out = firstLines(long, 200);
   assert.equal(out.length, 201); // 200 ký tự + dấu …
   assert.ok(out.endsWith("…"));
-});
-
-test("displayLabel ưu tiên alias", () => {
-  assert.equal(displayLabel("build-android-stg"), "build-android-stg");
-  assert.equal(displayLabel("build-android-stg", "Build Staging"), "Build Staging");
-  assert.equal(displayLabel("x", "   "), "x"); // alias rỗng -> dùng tên gốc
 });
 
 test("findScriptLines tìm đúng dòng của từng script", () => {

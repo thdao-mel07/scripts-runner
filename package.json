@@ -90,18 +90,6 @@
         "icon": "$(star-full)"
       },
       {
-        "command": "scriptsSidebar.setAlias",
-        "title": "Rename (set alias)",
-        "category": "Scripts Runner",
-        "icon": "$(edit)"
-      },
-      {
-        "command": "scriptsSidebar.clearAlias",
-        "title": "Remove alias",
-        "category": "Scripts Runner",
-        "icon": "$(discard)"
-      },
-      {
         "command": "scriptsSidebar.showRunning",
         "title": "Show running scripts",
         "category": "Scripts Runner",
@@ -134,14 +122,6 @@
         },
         {
           "command": "scriptsSidebar.unpinScript",
-          "when": "false"
-        },
-        {
-          "command": "scriptsSidebar.setAlias",
-          "when": "false"
-        },
-        {
-          "command": "scriptsSidebar.clearAlias",
           "when": "false"
         }
       ],
@@ -177,16 +157,6 @@
           "command": "scriptsSidebar.unpinScript",
           "when": "view == scriptView && viewItem =~ /Pinned/",
           "group": "inline@3"
-        },
-        {
-          "command": "scriptsSidebar.setAlias",
-          "when": "view == scriptView && viewItem =~ /^script/",
-          "group": "1_edit@1"
-        },
-        {
-          "command": "scriptsSidebar.clearAlias",
-          "when": "view == scriptView && viewItem =~ /Aliased/",
-          "group": "1_edit@2"
         }
       ]
     },

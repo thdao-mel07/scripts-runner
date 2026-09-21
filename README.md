@@ -23,9 +23,6 @@ A running script shows a spinner and a **stop** button so you always know what's
 ### ⭐ Pin your favorites
 Pin the scripts you use most to a **Favorites** group at the top of the sidebar. Pins are remembered per workspace.
 
-### ✏️ Rename scripts (alias)
-Give a long script like `build-android-fastlane-stg` a friendly display name such as `Build Android (Staging)`. Aliases are saved per workspace.
-
 ### 🔎 CodeLens & status bar
 - **CodeLens** in `package.json`: a "▶ Run" / "Run (silent)" button right above each script.
 - **Status bar** shows how many scripts are running — click it to stop one quickly.
@@ -65,7 +62,7 @@ Give a long script like `build-android-fastlane-stg` a friendly display name suc
 ## Release Notes
 
 ### 0.3.0
-- CodeLens in `package.json`, status bar running indicator, script aliases.
+- CodeLens in `package.json` and a status bar running indicator.
 - Silent-mode guard for long-running scripts + full output in an Output channel.
 - Several reliability fixes (process-tree kill, running-state tracking, terminal reuse).
 

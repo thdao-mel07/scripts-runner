@@ -5,7 +5,6 @@
 ### New
 - **CodeLens** in `package.json`: "▶ Run" and "Run (silent)" right above each script.
 - **Status bar** indicator showing how many scripts are running; click to stop one.
-- **Rename (alias)**: give a script a friendly display name in the sidebar.
 - **Silent-mode guard**: warns before running a long-running script (watch/dev/start) in silent mode.
 - Silent runs now stream full output to a **"Scripts Runner" Output channel** ("Show Output" button on the notification).
 

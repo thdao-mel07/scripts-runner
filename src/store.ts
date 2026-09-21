@@ -31,27 +31,3 @@ export async function removePin(key: string): Promise<void> {
   set.delete(key);
   await ctx.workspaceState.update(PINNED_KEY, [...set]);
 }
-
-// --- Alias (đổi tên hiển thị) ---
-
-const ALIAS_KEY = "scriptsSidebar.aliases";
-
-function getAliases(): Record<string, string> {
-  return ctx.workspaceState.get<Record<string, string>>(ALIAS_KEY, {});
-}
-
-export function getAlias(key: string): string | undefined {
-  return getAliases()[key];
-}
-
-export async function setAlias(key: string, alias: string): Promise<void> {
-  const all = getAliases();
-  all[key] = alias;
-  await ctx.workspaceState.update(ALIAS_KEY, all);
-}
-
-export async function removeAlias(key: string): Promise<void> {
-  const all = getAliases();
-  delete all[key];
-  await ctx.workspaceState.update(ALIAS_KEY, all);
-}

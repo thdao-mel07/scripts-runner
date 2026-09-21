@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
-import { scriptKey, displayLabel } from "./logic";
+import { scriptKey } from "./logic";
 import { isRunning } from "./running";
-import { isPinned, getAlias } from "./store";
+import { isPinned } from "./store";
 
 type ItemKind = "favorites" | "folder" | "script";
 
@@ -29,21 +29,16 @@ export class ScriptItem extends vscode.TreeItem {
       const key = scriptKey(cwd, scriptName);
       const isRun = isRunning(key);
       const pinned = isPinned(key);
-      const alias = getAlias(key);
 
       // contextValue ghép cờ; menu dùng regex negative-lookahead để lọc
       this.contextValue =
-        "script" +
-        (isRun ? "Running" : "") +
-        (pinned ? "Pinned" : "") +
-        (alias ? "Aliased" : "");
+        "script" + (isRun ? "Running" : "") + (pinned ? "Pinned" : "");
 
-      this.label = displayLabel(scriptName, alias);
-      this.description = alias ? `${scriptName} · ${scriptValue}` : scriptValue;
+      this.description = scriptValue;
       this.tooltip = new vscode.MarkdownString(
-        `**${scriptName}**${alias ? ` (alias: ${alias})` : ""}${
-          isRun ? " · _running_" : ""
-        }${pinned ? " · ⭐" : ""}\n\n\`\`\`sh\n${scriptValue}\n\`\`\``
+        `**${scriptName}**${isRun ? " · _running_" : ""}${
+          pinned ? " · ⭐" : ""
+        }\n\n\`\`\`sh\n${scriptValue}\n\`\`\``
       );
       this.iconPath = isRun
         ? new vscode.ThemeIcon("loading~spin")

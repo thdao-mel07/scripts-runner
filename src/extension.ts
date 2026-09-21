@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import { scriptKey } from "./logic";
-import { initStore, addPin, removePin, getAlias, setAlias, removeAlias } from "./store";
+import { initStore, addPin, removePin } from "./store";
 import {
   initRunning,
   onTerminalClosed,
@@ -35,31 +35,6 @@ function resolveTarget(item: unknown):
     };
   }
   return undefined;
-}
-
-/** Đặt/đổi alias hiển thị cho 1 script */
-async function promptAlias(
-  item: ScriptItem,
-  refresh: () => void
-): Promise<void> {
-  if (!item?.scriptName || !item.packageJsonPath) {
-    return;
-  }
-  const key = scriptKey(path.dirname(item.packageJsonPath), item.scriptName);
-  const input = await vscode.window.showInputBox({
-    title: `Alias for "${item.scriptName}"`,
-    prompt: "Enter a display name (leave empty to remove)",
-    value: getAlias(key) ?? "",
-  });
-  if (input === undefined) {
-    return; // Esc
-  }
-  if (input.trim() === "") {
-    await removeAlias(key);
-  } else {
-    await setAlias(key, input.trim());
-  }
-  refresh();
 }
 
 /** Click status bar -> chọn 1 script đang chạy để dừng */
@@ -146,19 +121,6 @@ export function activate(context: vscode.ExtensionContext): void {
         const key = keyOf(item);
         if (key) {
           await removePin(key);
-          provider.refresh();
-        }
-      }
-    ),
-    vscode.commands.registerCommand("scriptsSidebar.setAlias", (item: ScriptItem) =>
-      promptAlias(item, () => provider.refresh())
-    ),
-    vscode.commands.registerCommand(
-      "scriptsSidebar.clearAlias",
-      async (item: ScriptItem) => {
-        const key = keyOf(item);
-        if (key) {
-          await removeAlias(key);
           provider.refresh();
         }
       }
