@@ -7,5 +7,8 @@ memory-bank/**
 .gitignore
 esbuild.js
 tsconfig.json
+images/**
+resources/icon-128.png
+resources/marketplace-icon.svg
 **/*.map
 **/*.ts
