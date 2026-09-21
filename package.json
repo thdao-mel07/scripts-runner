@@ -2,7 +2,7 @@
   "name": "scripts-sidebar",
   "displayName": "Scripts Runner Sidebar",
   "description": "Run npm, yarn, and pnpm scripts from the sidebar with one click.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "dothanhdao",
   "license": "MIT",
   "engines": {
@@ -55,43 +55,61 @@
     "viewsWelcome": [
       {
         "view": "scriptView",
-        "contents": "Không tìm thấy scripts.\nMở một thư mục có file package.json chứa mục \"scripts\" để bắt đầu.\n[Mở thư mục](command:workbench.action.files.openFolder)"
+        "contents": "No scripts found.\nOpen a folder that has a package.json with a \"scripts\" section to get started.\n[Open Folder](command:workbench.action.files.openFolder)"
       }
     ],
     "commands": [
       {
         "command": "scriptsSidebar.runScript",
-        "title": "Chạy Script",
+        "title": "Run Script",
         "category": "Scripts Runner",
         "icon": "$(play)"
       },
       {
         "command": "scriptsSidebar.runScriptSilent",
-        "title": "Chạy Script (nền, hiện kết quả qua thông báo)",
+        "title": "Run Script (silent, report via notification)",
         "category": "Scripts Runner",
         "icon": "$(run-below)"
       },
       {
         "command": "scriptsSidebar.stopScript",
-        "title": "Dừng Script",
+        "title": "Stop Script",
         "category": "Scripts Runner",
         "icon": "$(debug-stop)"
       },
       {
         "command": "scriptsSidebar.pinScript",
-        "title": "Ghim lên Favorites",
+        "title": "Pin to Favorites",
         "category": "Scripts Runner",
         "icon": "$(star-empty)"
       },
       {
         "command": "scriptsSidebar.unpinScript",
-        "title": "Bỏ ghim",
+        "title": "Unpin",
         "category": "Scripts Runner",
         "icon": "$(star-full)"
       },
       {
+        "command": "scriptsSidebar.setAlias",
+        "title": "Rename (set alias)",
+        "category": "Scripts Runner",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "scriptsSidebar.clearAlias",
+        "title": "Remove alias",
+        "category": "Scripts Runner",
+        "icon": "$(discard)"
+      },
+      {
+        "command": "scriptsSidebar.showRunning",
+        "title": "Show running scripts",
+        "category": "Scripts Runner",
+        "icon": "$(list-selection)"
+      },
+      {
         "command": "scriptsSidebar.refresh",
-        "title": "Làm mới",
+        "title": "Refresh",
         "category": "Scripts Runner",
         "icon": "$(refresh)"
       }
@@ -117,6 +135,14 @@
         {
           "command": "scriptsSidebar.unpinScript",
           "when": "false"
+        },
+        {
+          "command": "scriptsSidebar.setAlias",
+          "when": "false"
+        },
+        {
+          "command": "scriptsSidebar.clearAlias",
+          "when": "false"
         }
       ],
       "view/title": [
@@ -129,7 +155,7 @@
       "view/item/context": [
         {
           "command": "scriptsSidebar.runScript",
-          "when": "view == scriptView && viewItem =~ /^script(Pinned)?$/",
+          "when": "view == scriptView && viewItem =~ /^script(?!.*Running)/",
           "group": "inline@1"
         },
         {
@@ -139,18 +165,28 @@
         },
         {
           "command": "scriptsSidebar.runScriptSilent",
-          "when": "view == scriptView && viewItem =~ /^script(Pinned)?$/",
+          "when": "view == scriptView && viewItem =~ /^script(?!.*Running)/",
           "group": "inline@2"
         },
         {
           "command": "scriptsSidebar.pinScript",
-          "when": "view == scriptView && viewItem =~ /^script(Running)?$/",
+          "when": "view == scriptView && viewItem =~ /^script(?!.*Pinned)/",
           "group": "inline@3"
         },
         {
           "command": "scriptsSidebar.unpinScript",
           "when": "view == scriptView && viewItem =~ /Pinned/",
           "group": "inline@3"
+        },
+        {
+          "command": "scriptsSidebar.setAlias",
+          "when": "view == scriptView && viewItem =~ /^script/",
+          "group": "1_edit@1"
+        },
+        {
+          "command": "scriptsSidebar.clearAlias",
+          "when": "view == scriptView && viewItem =~ /Aliased/",
+          "group": "1_edit@2"
         }
       ]
     },
@@ -166,12 +202,17 @@
             "pnpm"
           ],
           "default": "auto",
-          "description": "Trình quản lý gói dùng để chạy script. 'auto' sẽ tự phát hiện qua lockfile."
+          "description": "Package manager used to run scripts. 'auto' detects it from the lockfile."
         },
         "scriptsSidebar.reuseTerminal": {
           "type": "boolean",
           "default": true,
-          "description": "Tái sử dụng terminal của từng script thay vì tạo terminal mới mỗi lần chạy."
+          "description": "Reuse each script's terminal instead of creating a new one every run."
+        },
+        "scriptsSidebar.confirmSilentForLongRunning": {
+          "type": "boolean",
+          "default": true,
+          "description": "Warn before running a long-running script (watch/dev/start) in silent mode, since it may never finish."
         }
       }
     }
@@ -182,6 +223,7 @@
     "watch": "node esbuild.js --watch",
     "package": "node esbuild.js --production",
     "lint": "tsc --noEmit",
+    "test": "node --import tsx --test test/*.test.ts",
     "vsce:package": "vsce package",
     "publish": "vsce publish",
     "publish:patch": "vsce publish patch",
@@ -197,6 +239,7 @@
     "esbuild": "^0.20.0",
     "ovsx": "^0.10.0",
     "sharp": "^0.35.4",
+    "tsx": "^4.19.0",
     "typescript": "^5.4.0"
   }
 }

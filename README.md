@@ -23,6 +23,13 @@ A running script shows a spinner and a **stop** button so you always know what's
 ### ⭐ Pin your favorites
 Pin the scripts you use most to a **Favorites** group at the top of the sidebar. Pins are remembered per workspace.
 
+### ✏️ Rename scripts (alias)
+Give a long script like `build-android-fastlane-stg` a friendly display name such as `Build Android (Staging)`. Aliases are saved per workspace.
+
+### 🔎 CodeLens & status bar
+- **CodeLens** in `package.json`: a "▶ Run" / "Run (silent)" button right above each script.
+- **Status bar** shows how many scripts are running — click it to stop one quickly.
+
 ### 🗂️ Stays tidy
 - Fold the whole script list away — the collapsed state is remembered.
 - **Monorepo friendly:** every `package.json` gets its own collapsible node.
@@ -56,6 +63,11 @@ Pin the scripts you use most to a **Favorites** group at the top of the sidebar.
 - For scripts run in the **terminal**, the "running" indicator clears automatically when the command finishes **only if VS Code Shell Integration is enabled**. Without it, the indicator clears when you close the terminal or press stop.
 
 ## Release Notes
+
+### 0.3.0
+- CodeLens in `package.json`, status bar running indicator, script aliases.
+- Silent-mode guard for long-running scripts + full output in an Output channel.
+- Several reliability fixes (process-tree kill, running-state tracking, terminal reuse).
 
 ### 0.2.0
 - Added **Stop** action and a running-state indicator (spinner).
