@@ -5,7 +5,7 @@ import { scriptKey } from "./logic";
 import { isRunning } from "./running";
 import { isHidden } from "./store";
 
-type ItemKind = "hidden" | "folder" | "script";
+type ItemKind = "folder" | "script";
 
 /** Số package.json tối đa quét trong workspace */
 const MAX_PACKAGE_JSON = 500;
@@ -28,23 +28,19 @@ export class ScriptItem extends vscode.TreeItem {
       const cwd = path.dirname(packageJsonPath);
       const key = scriptKey(cwd, scriptName);
       const isRun = isRunning(key);
-      const hidden = isHidden(key);
 
       // contextValue ghép cờ; menu dùng regex negative-lookahead để lọc
-      this.contextValue =
-        "script" + (isRun ? "Running" : "") + (hidden ? "Hidden" : "");
+      this.contextValue = "script" + (isRun ? "Running" : "");
 
       this.description = scriptValue;
       this.tooltip = new vscode.MarkdownString(
-        `**${scriptName}**${isRun ? " · _running_" : ""}${
-          hidden ? " · _hidden_" : ""
+        `**${scriptName}**${
+          isRun ? " · _running_" : ""
         }\n\n\`\`\`sh\n${scriptValue}\n\`\`\``
       );
       this.iconPath = isRun
         ? new vscode.ThemeIcon("loading~spin")
-        : hidden
-          ? new vscode.ThemeIcon("eye-closed")
-          : new vscode.ThemeIcon("play");
+        : new vscode.ThemeIcon("play");
 
       this.command = {
         command: "scriptsSidebar.runScript",
@@ -55,9 +51,6 @@ export class ScriptItem extends vscode.TreeItem {
       this.contextValue = "folder";
       this.iconPath = new vscode.ThemeIcon("package");
       this.tooltip = packageJsonPath;
-    } else if (kind === "hidden") {
-      this.contextValue = "hidden";
-      this.iconPath = new vscode.ThemeIcon("eye-closed");
     }
   }
 }
@@ -143,7 +136,9 @@ export class ScriptProvider implements vscode.TreeDataProvider<ScriptItem> {
 
     const roots: ScriptItem[] = [];
 
-    // 1) Mỗi package.json là 1 folder; chỉ liệt kê script KHÔNG bị ẩn
+    // Mỗi package.json là 1 folder; chỉ liệt kê script KHÔNG bị ẩn.
+    // Script đã ẩn bị loại hẳn khỏi UI; hiện lại bằng chuột phải trong
+    // file package.json (command scriptsSidebar.showHidden).
     for (const pkg of packages) {
       const folder = new ScriptItem(
         "folder",
@@ -159,38 +154,7 @@ export class ScriptProvider implements vscode.TreeDataProvider<ScriptItem> {
       roots.push(folder);
     }
 
-    // 2) Nhóm "Hidden" ở cuối (thu gọn) để hiện lại script đã ẩn
-    const hidden = this.buildHidden(packages);
-    if (hidden) {
-      roots.push(hidden);
-    }
-
     return roots;
-  }
-
-  private buildHidden(packages: PackageInfo[]): ScriptItem | undefined {
-    const items: ScriptItem[] = [];
-    for (const pkg of packages) {
-      for (const [name, value] of Object.entries(pkg.scripts)) {
-        if (isHidden(scriptKey(pkg.dir, name))) {
-          items.push(this.makeScriptItem(pkg, name, value));
-        }
-      }
-    }
-    if (items.length === 0) {
-      return undefined;
-    }
-
-    items.sort((a, b) => String(a.label).localeCompare(String(b.label)));
-    const group = new ScriptItem(
-      "hidden",
-      "Hidden",
-      vscode.TreeItemCollapsibleState.Collapsed
-    );
-    group.id = "hidden";
-    group.children = items;
-    group.description = `${items.length}`;
-    return group;
   }
 
   /** Script hiển thị của 1 package (bỏ những cái đã ẩn), sắp xếp A-Z */

@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import { scriptKey } from "./logic";
-import { initStore, addHidden, removeHidden } from "./store";
+import { initStore, addHidden, removeHidden, getHiddenSet } from "./store";
 import {
   initRunning,
   onTerminalClosed,
@@ -34,6 +34,54 @@ function resolveTarget(item: unknown):
     };
   }
   return undefined;
+}
+
+/**
+ * Hiện lại script đã ẩn — gọi từ chuột phải trong file package.json.
+ * Lọc theo package.json đang mở (nếu có), cho chọn nhiều để bỏ ẩn.
+ */
+async function showHidden(
+  contextUri: vscode.Uri | undefined,
+  refresh: () => void
+): Promise<void> {
+  const hidden = getHiddenSet();
+  if (hidden.size === 0) {
+    vscode.window.showInformationMessage("No hidden scripts.");
+    return;
+  }
+
+  let keys = [...hidden];
+  // Nếu gọi từ 1 package.json cụ thể -> chỉ lấy script ẩn của thư mục đó
+  const uri = contextUri ?? vscode.window.activeTextEditor?.document.uri;
+  if (uri && path.basename(uri.fsPath) === "package.json") {
+    const dir = path.dirname(uri.fsPath);
+    const scoped = keys.filter((k) => k.startsWith(`${dir}::`));
+    if (scoped.length > 0) {
+      keys = scoped;
+    }
+  }
+
+  const picks = await vscode.window.showQuickPick(
+    keys.map((k) => {
+      const sep = k.lastIndexOf("::");
+      return {
+        label: k.slice(sep + 2),
+        description: path.basename(k.slice(0, sep)),
+        key: k,
+      };
+    }),
+    {
+      placeHolder: "Select hidden script(s) to show in the sidebar again",
+      canPickMany: true,
+    }
+  );
+  if (!picks || picks.length === 0) {
+    return;
+  }
+  for (const p of picks) {
+    await removeHidden(p.key);
+  }
+  refresh();
 }
 
 /** Click status bar -> chọn 1 script đang chạy để dừng */
@@ -115,14 +163,8 @@ export function activate(context: vscode.ExtensionContext): void {
       }
     ),
     vscode.commands.registerCommand(
-      "scriptsSidebar.unhideScript",
-      async (item: ScriptItem) => {
-        const key = keyOf(item);
-        if (key) {
-          await removeHidden(key);
-          provider.refresh();
-        }
-      }
+      "scriptsSidebar.showHidden",
+      (uri?: vscode.Uri) => showHidden(uri, () => provider.refresh())
     ),
     vscode.commands.registerCommand(
       "scriptsSidebar.showRunning",

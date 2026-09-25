@@ -21,7 +21,7 @@ Every script in your `package.json` shows up in a dedicated **Scripts Runner** v
 A running script shows a spinner and a **stop** button so you always know what's live. Clicking a running script focuses its terminal instead of starting it again — no more accidentally restarting your dev server.
 
 ### 🙈 Hide scripts you don't use
-Hide noisy scripts from the sidebar to keep only the ones you run. Hidden scripts move to a collapsible **Hidden** group at the bottom, where you can show them again anytime. Your choice is remembered per workspace, and newly added scripts always show up by default.
+Hide noisy scripts from the sidebar to keep only the ones you run — hidden scripts are removed from the view entirely. To bring them back, right-click inside the `package.json` file and choose **"Show Hidden Scripts…"**. Your choice is remembered per workspace, and newly added scripts always show up by default.
 
 ### 🔎 Status bar
 - **Status bar** shows how many scripts are running — click it to stop one quickly.
@@ -38,8 +38,9 @@ Hide noisy scripts from the sidebar to keep only the ones you run. Hidden script
 2. Open the **Scripts Runner** view in the Activity Bar (left side).
 3. **Click** a script to run it in the terminal. On hover you get:
    - `▷` run silently
-   - `🙈 / 👁` hide / show in sidebar
+   - `🙈` hide from sidebar
    - `⏹` stop (while running)
+4. To show hidden scripts again: right-click in `package.json` → **Show Hidden Scripts…**
 
 ## Extension Settings
 

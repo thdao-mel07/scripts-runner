@@ -84,8 +84,8 @@
         "icon": "$(eye-closed)"
       },
       {
-        "command": "scriptsSidebar.unhideScript",
-        "title": "Show in sidebar",
+        "command": "scriptsSidebar.showHidden",
+        "title": "Show Hidden Scripts…",
         "category": "Scripts Runner",
         "icon": "$(eye)"
       },
@@ -119,10 +119,13 @@
         {
           "command": "scriptsSidebar.hideScript",
           "when": "false"
-        },
+        }
+      ],
+      "editor/context": [
         {
-          "command": "scriptsSidebar.unhideScript",
-          "when": "false"
+          "command": "scriptsSidebar.showHidden",
+          "when": "resourceFilename == package.json",
+          "group": "scriptsSidebar@1"
         }
       ],
       "view/title": [
@@ -145,12 +148,7 @@
         },
         {
           "command": "scriptsSidebar.hideScript",
-          "when": "view == scriptView && viewItem =~ /^script(?!.*Hidden)/",
-          "group": "inline@3"
-        },
-        {
-          "command": "scriptsSidebar.unhideScript",
-          "when": "view == scriptView && viewItem =~ /Hidden/",
+          "when": "view == scriptView && viewItem =~ /^script(?!.*Running)/",
           "group": "inline@3"
         }
       ]
