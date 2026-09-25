@@ -16,7 +16,6 @@ import {
   runScriptSilent,
 } from "./runner";
 import { ScriptItem, ScriptProvider } from "./tree";
-import { PackageJsonCodeLensProvider } from "./codelens";
 
 /** Lấy (packageJsonPath, scriptName, scriptValue) từ ScriptItem hoặc object CodeLens */
 function resolveTarget(item: unknown):
@@ -131,13 +130,6 @@ export function activate(context: vscode.ExtensionContext): void {
     ),
     vscode.commands.registerCommand("scriptsSidebar.refresh", () =>
       provider.refresh()
-    ),
-    vscode.languages.registerCodeLensProvider(
-      [
-        { language: "json", pattern: "**/package.json" },
-        { language: "jsonc", pattern: "**/package.json" },
-      ],
-      new PackageJsonCodeLensProvider()
     )
   );
 

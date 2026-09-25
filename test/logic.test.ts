@@ -6,7 +6,6 @@ import {
   pickPackageManager,
   isLongRunningScript,
   firstLines,
-  findScriptLines,
 } from "../src/logic";
 
 test("scriptKey ghép cwd + tên script", () => {
@@ -48,23 +47,3 @@ test("firstLines rút gọn và gộp khoảng trắng", () => {
   assert.ok(out.endsWith("…"));
 });
 
-test("findScriptLines tìm đúng dòng của từng script", () => {
-  const json = [
-    "{",
-    '  "name": "demo",',
-    '  "scripts": {',
-    '    "build": "tsc",',
-    '    "dev": "vite"',
-    "  }",
-    "}",
-  ].join("\n");
-  const lines = findScriptLines(json);
-  assert.equal(lines.get("build"), 3);
-  assert.equal(lines.get("dev"), 4);
-  // "name" ngoài block scripts -> không được tính
-  assert.equal(lines.has("name"), false);
-});
-
-test("findScriptLines trả rỗng khi không có scripts", () => {
-  assert.equal(findScriptLines('{"name":"x"}').size, 0);
-});

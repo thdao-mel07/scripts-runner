@@ -23,8 +23,7 @@ A running script shows a spinner and a **stop** button so you always know what's
 ### ⭐ Pin your favorites
 Pin the scripts you use most to a **Favorites** group at the top of the sidebar. Pins are remembered per workspace.
 
-### 🔎 CodeLens & status bar
-- **CodeLens** in `package.json`: a "▶ Run" / "Run (silent)" button right above each script.
+### 🔎 Status bar
 - **Status bar** shows how many scripts are running — click it to stop one quickly.
 
 ### 🗂️ Stays tidy
