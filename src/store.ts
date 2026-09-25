@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
-// Lưu trạng thái pin & alias vào workspaceState (theo từng workspace).
+// Lưu danh sách script bị ẩn vào workspaceState (theo từng workspace).
+// Rule: mặc định KHÔNG ẩn gì; chỉ ẩn các script user chủ động ẩn.
 
 let ctx: vscode.ExtensionContext;
 
@@ -8,26 +9,24 @@ export function initStore(context: vscode.ExtensionContext): void {
   ctx = context;
 }
 
-// --- Pin / Favorites ---
+const HIDDEN_KEY = "scriptsSidebar.hidden";
 
-const PINNED_KEY = "scriptsSidebar.pinned";
-
-export function getPinnedSet(): Set<string> {
-  return new Set(ctx.workspaceState.get<string[]>(PINNED_KEY, []));
+export function getHiddenSet(): Set<string> {
+  return new Set(ctx.workspaceState.get<string[]>(HIDDEN_KEY, []));
 }
 
-export function isPinned(key: string): boolean {
-  return getPinnedSet().has(key);
+export function isHidden(key: string): boolean {
+  return getHiddenSet().has(key);
 }
 
-export async function addPin(key: string): Promise<void> {
-  const set = getPinnedSet();
+export async function addHidden(key: string): Promise<void> {
+  const set = getHiddenSet();
   set.add(key);
-  await ctx.workspaceState.update(PINNED_KEY, [...set]);
+  await ctx.workspaceState.update(HIDDEN_KEY, [...set]);
 }
 
-export async function removePin(key: string): Promise<void> {
-  const set = getPinnedSet();
+export async function removeHidden(key: string): Promise<void> {
+  const set = getHiddenSet();
   set.delete(key);
-  await ctx.workspaceState.update(PINNED_KEY, [...set]);
+  await ctx.workspaceState.update(HIDDEN_KEY, [...set]);
 }

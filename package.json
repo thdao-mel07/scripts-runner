@@ -78,16 +78,16 @@
         "icon": "$(debug-stop)"
       },
       {
-        "command": "scriptsSidebar.pinScript",
-        "title": "Pin to Favorites",
+        "command": "scriptsSidebar.hideScript",
+        "title": "Hide from sidebar",
         "category": "Scripts Runner",
-        "icon": "$(star-empty)"
+        "icon": "$(eye-closed)"
       },
       {
-        "command": "scriptsSidebar.unpinScript",
-        "title": "Unpin",
+        "command": "scriptsSidebar.unhideScript",
+        "title": "Show in sidebar",
         "category": "Scripts Runner",
-        "icon": "$(star-full)"
+        "icon": "$(eye)"
       },
       {
         "command": "scriptsSidebar.showRunning",
@@ -117,11 +117,11 @@
           "when": "false"
         },
         {
-          "command": "scriptsSidebar.pinScript",
+          "command": "scriptsSidebar.hideScript",
           "when": "false"
         },
         {
-          "command": "scriptsSidebar.unpinScript",
+          "command": "scriptsSidebar.unhideScript",
           "when": "false"
         }
       ],
@@ -144,13 +144,13 @@
           "group": "inline@2"
         },
         {
-          "command": "scriptsSidebar.pinScript",
-          "when": "view == scriptView && viewItem =~ /^script(?!.*Pinned)/",
+          "command": "scriptsSidebar.hideScript",
+          "when": "view == scriptView && viewItem =~ /^script(?!.*Hidden)/",
           "group": "inline@3"
         },
         {
-          "command": "scriptsSidebar.unpinScript",
-          "when": "view == scriptView && viewItem =~ /Pinned/",
+          "command": "scriptsSidebar.unhideScript",
+          "when": "view == scriptView && viewItem =~ /Hidden/",
           "group": "inline@3"
         }
       ]

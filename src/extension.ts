@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import { scriptKey } from "./logic";
-import { initStore, addPin, removePin } from "./store";
+import { initStore, addHidden, removeHidden } from "./store";
 import {
   initRunning,
   onTerminalClosed,
@@ -105,21 +105,21 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand("scriptsSidebar.runScriptSilent", runSilent),
     vscode.commands.registerCommand("scriptsSidebar.stopScript", stop),
     vscode.commands.registerCommand(
-      "scriptsSidebar.pinScript",
+      "scriptsSidebar.hideScript",
       async (item: ScriptItem) => {
         const key = keyOf(item);
         if (key) {
-          await addPin(key);
+          await addHidden(key);
           provider.refresh();
         }
       }
     ),
     vscode.commands.registerCommand(
-      "scriptsSidebar.unpinScript",
+      "scriptsSidebar.unhideScript",
       async (item: ScriptItem) => {
         const key = keyOf(item);
         if (key) {
-          await removePin(key);
+          await removeHidden(key);
           provider.refresh();
         }
       }

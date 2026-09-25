@@ -20,8 +20,8 @@ Every script in your `package.json` shows up in a dedicated **Scripts Runner** v
 ### ⏹ Stop & running state
 A running script shows a spinner and a **stop** button so you always know what's live. Clicking a running script focuses its terminal instead of starting it again — no more accidentally restarting your dev server.
 
-### ⭐ Pin your favorites
-Pin the scripts you use most to a **Favorites** group at the top of the sidebar. Pins are remembered per workspace.
+### 🙈 Hide scripts you don't use
+Hide noisy scripts from the sidebar to keep only the ones you run. Hidden scripts move to a collapsible **Hidden** group at the bottom, where you can show them again anytime. Your choice is remembered per workspace, and newly added scripts always show up by default.
 
 ### 🔎 Status bar
 - **Status bar** shows how many scripts are running — click it to stop one quickly.
@@ -36,10 +36,9 @@ Pin the scripts you use most to a **Favorites** group at the top of the sidebar.
 
 1. Open a project that has a `package.json` with a `scripts` section.
 2. Open the **Scripts Runner** view in the Activity Bar (left side).
-3. **Click** a script to run it. On hover you get:
-   - `▶` run in terminal
+3. **Click** a script to run it in the terminal. On hover you get:
    - `▷` run silently
-   - `☆ / ★` pin / unpin
+   - `🙈 / 👁` hide / show in sidebar
    - `⏹` stop (while running)
 
 ## Extension Settings
