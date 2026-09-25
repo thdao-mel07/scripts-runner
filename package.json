@@ -188,12 +188,12 @@
     "lint": "tsc --noEmit",
     "test": "node --import tsx --test test/*.test.ts",
     "vsce:package": "vsce package",
+    "release": "npm version patch && git push --follow-tags",
+    "release:minor": "npm version minor && git push --follow-tags",
+    "release:major": "npm version major && git push --follow-tags",
     "publish": "vsce publish",
-    "publish:patch": "vsce publish patch",
-    "publish:minor": "vsce publish minor",
-    "publish:major": "vsce publish major",
-    "ovsx:namespace": "ovsx create-namespace dothanhdao",
-    "publish:ovsx": "ovsx publish"
+    "publish:ovsx": "ovsx publish",
+    "ovsx:namespace": "ovsx create-namespace dothanhdao"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

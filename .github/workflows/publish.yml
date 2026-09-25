@@ -1,0 +1,40 @@
+name: Publish Extension
+
+# Chạy khi push 1 tag dạng v1.2.3, hoặc bấm tay trong tab Actions.
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      - name: Publish to VS Code Marketplace
+        run: npx @vscode/vsce publish -p "$VSCE_PAT"
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
+      # Vẫn thử publish Open VSX kể cả khi bước trên lỗi
+      - name: Publish to Open VSX
+        if: ${{ !cancelled() }}
+        run: npx ovsx publish -p "$OVSX_PAT"
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
