@@ -2,9 +2,12 @@
 
 ## Thay đổi mới nhất (chưa publish)
 - Bỏ Favorites/pin, bỏ alias, bỏ CodeLens, bỏ nút inline Run terminal.
-- THÊM: ẩn/hiện script (hide/unhide) - script ẩn gom vào nhóm "Hidden" ở
-  cuối; lưu workspaceState key "scriptsSidebar.hidden". Rule lấy script lần
-  đầu KHÔNG đổi (mọi script mới vẫn hiện mặc định).
+- THÊM: ẩn script (hide) - script ẩn bị LOẠI HẲN khỏi sidebar (không có
+  nhóm Hidden). Hiện lại bằng CHUỘT PHẢI trong file package.json ->
+  "Show Hidden Scripts…" (command scriptsSidebar.showHidden, editor/context
+  when resourceFilename==package.json, QuickPick multi-select).
+  Lưu workspaceState key "scriptsSidebar.hidden". Rule lấy script lần đầu
+  KHÔNG đổi (script mới vẫn hiện mặc định).
 - Đang là v0.3.0 local (store đang chạy 0.3.0 cũ). Cần publish:patch -> 0.3.1.
 
 ## Đang làm gì
