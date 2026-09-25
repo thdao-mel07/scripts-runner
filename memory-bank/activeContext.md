@@ -1,5 +1,12 @@
 # Active Context
 
+## Thay đổi mới nhất (chưa publish)
+- Bỏ Favorites/pin, bỏ alias, bỏ CodeLens, bỏ nút inline Run terminal.
+- THÊM: ẩn/hiện script (hide/unhide) - script ẩn gom vào nhóm "Hidden" ở
+  cuối; lưu workspaceState key "scriptsSidebar.hidden". Rule lấy script lần
+  đầu KHÔNG đổi (mọi script mới vẫn hiện mặc định).
+- Đang là v0.3.0 local (store đang chạy 0.3.0 cũ). Cần publish:patch -> 0.3.1.
+
 ## Đang làm gì
 v0.3.0 (2026-09-21): sửa 6 bug + thêm CodeLens (package.json), status bar
 running indicator, alias (rename script), guard silent cho script chạy dài,

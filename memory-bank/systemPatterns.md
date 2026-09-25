@@ -6,7 +6,7 @@ extension/
 ├── src/
 │   ├── extension.ts      # mỏng: activate/deactivate + đăng ký command
 │   ├── logic.ts          # hàm THUẦN (pure) - có test, không import vscode
-│   ├── store.ts          # pin + alias (workspaceState)
+│   ├── store.ts          # danh sách script bị ẩn (hide) - workspaceState
 │   ├── running.ts        # map script đang chạy + status bar + kill
 │   ├── runner.ts         # detectPM + chạy terminal/silent + output channel
 │   ├── tree.ts           # ScriptItem + ScriptProvider + findPackageJsons
