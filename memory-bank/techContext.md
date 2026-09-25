@@ -67,9 +67,15 @@ vsce package
 - GitHub repo (public): https://github.com/thdao-mel07/scripts-runner
   (gh account: thdao-mel07). Đã set repository/bugs/homepage.
 - Ảnh demo: images/demo.png -> vsce tự đổi thành raw URL khi package.
-- Lệnh: `npx @vscode/vsce login dothanhdao` rồi `npx @vscode/vsce publish`
-  (token do user tự nhập, có scope Marketplace > Manage).
-- Update version sau: `npx @vscode/vsce publish patch|minor|major`.
+- TỰ ĐỘNG qua GitHub Actions (.github/workflows/publish.yml): push tag v*
+  -> lint + test + publish CẢ MS Marketplace + Open VSX.
+- Secrets trên GitHub: VSCE_PAT (Azure DevOps, Marketplace>Manage) và
+  OVSX_PAT (Open VSX). Token KHÔNG còn ở máy local.
+- Release 1 lệnh: `npm run release` (= npm version patch + push --follow-tags).
+  Lifecycle `version` chạy scripts/stamp-changelog.mjs: gắn [Unreleased] ->
+  [x.y.z] - date vào CHANGELOG.md rồi git add (vào chung version commit).
+  -> Ghi thay đổi vào mục "## [Unreleased]" trong CHANGELOG TRƯỚC khi release.
+- README không còn liệt kê version (tránh stale); nguồn duy nhất = CHANGELOG.md.
 
 ## Settings extension expose
 - `scriptsSidebar.packageManager`: auto | npm | yarn | pnpm (default auto)
