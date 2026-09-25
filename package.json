@@ -134,11 +134,6 @@
       ],
       "view/item/context": [
         {
-          "command": "scriptsSidebar.runScript",
-          "when": "view == scriptView && viewItem =~ /^script(?!.*Running)/",
-          "group": "inline@1"
-        },
-        {
           "command": "scriptsSidebar.stopScript",
           "when": "view == scriptView && viewItem =~ /Running/",
           "group": "inline@1"
