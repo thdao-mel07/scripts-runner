@@ -2,7 +2,7 @@
   "name": "scripts-sidebar",
   "displayName": "Scripts Runner Sidebar",
   "description": "Run npm, yarn, and pnpm scripts from the sidebar with one click.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "publisher": "dothanhdao",
   "license": "MIT",
   "engines": {
