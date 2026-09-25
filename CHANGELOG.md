@@ -1,5 +1,19 @@
 # Change Log
 
+## [Unreleased]
+
+<!-- Ghi thay đổi mới ở đây; `npm run release` sẽ tự gắn số version + ngày. -->
+
+## [0.3.1]
+
+### Changed
+- Hidden scripts are now removed from the sidebar entirely; restore them via
+  right-click in `package.json` → "Show Hidden Scripts…" (replaces Favorites).
+
+### Removed
+- Favorites / pin, script alias (rename), CodeLens in `package.json`, and the
+  inline run-in-terminal button (clicking a script still runs it).
+
 ## [0.3.0]
 
 ### New

@@ -60,19 +60,7 @@ Hide noisy scripts from the sidebar to keep only the ones you run — hidden scr
 
 ## Release Notes
 
-### 0.3.0
-- CodeLens in `package.json` and a status bar running indicator.
-- Silent-mode guard for long-running scripts + full output in an Output channel.
-- Several reliability fixes (process-tree kill, running-state tracking, terminal reuse).
-
-### 0.2.0
-- Added **Stop** action and a running-state indicator (spinner).
-- Added **Pin / Favorites**.
-- Collapsible package node that remembers its state.
-- Clicking a running script now focuses its terminal instead of re-running it.
-
-### 0.1.0
-- Initial release: sidebar with one-click run, terminal & silent modes, npm/yarn/pnpm auto-detection, auto-refresh, monorepo support.
+See the [Changelog](CHANGELOG.md) (also available on the extension's **Changelog** tab in the Marketplace) for the full version history.
 
 ---
 
