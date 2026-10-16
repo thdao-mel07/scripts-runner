@@ -6,8 +6,11 @@ import {
   filterPackages,
   parseWorkspacesField,
   parsePnpmWorkspaceYaml,
+  parseScriptsRunnerConfig,
+  mergeFilterOptions,
   type DiscoveredPackage,
   type ScanMode,
+  type PackageFilterOptions,
 } from "./logic";
 import { isRunning } from "./running";
 import { isHidden, isFolderHidden, isFolderExpanded } from "./store";
@@ -68,17 +71,40 @@ interface PackageInfo extends DiscoveredPackage {
   scripts: Record<string, string>;
 }
 
+/** Cấu hình lọc đọc từ settings + biết scanMode có được đặt rõ không. */
+interface SettingsFilter {
+  options: PackageFilterOptions;
+  scanModeExplicit: boolean;
+}
+
 /** Đọc cấu hình lọc package từ settings `scriptsSidebar`. */
-function readFilterOptions(): {
-  scanMode: ScanMode;
-  include: string[];
-  exclude: string[];
-} {
+function readSettingsFilter(): SettingsFilter {
   const cfg = vscode.workspace.getConfiguration("scriptsSidebar");
   const scanMode = cfg.get<ScanMode>("scanMode", "all");
   const include = cfg.get<string[]>("include", []);
   const exclude = cfg.get<string[]>("exclude", []);
-  return { scanMode, include, exclude };
+  // scanMode có giá trị user/workspace đặt rõ hay chỉ là mặc định?
+  const insp = cfg.inspect<ScanMode>("scanMode");
+  const scanModeExplicit =
+    insp?.workspaceFolderValue !== undefined ||
+    insp?.workspaceValue !== undefined ||
+    insp?.globalValue !== undefined;
+  return { options: { scanMode, include, exclude }, scanModeExplicit };
+}
+
+/** Đọc field `scriptsRunner` từ package.json gốc của 1 workspace folder. */
+function readRepoConfig(workspaceRoot: string) {
+  try {
+    const pkgPath = path.join(workspaceRoot, "package.json");
+    if (fs.existsSync(pkgPath)) {
+      return parseScriptsRunnerConfig(
+        JSON.parse(fs.readFileSync(pkgPath, "utf-8"))
+      );
+    }
+  } catch {
+    // package.json gốc lỗi cú pháp -> bỏ qua, dùng settings
+  }
+  return {};
 }
 
 /** Thư mục workspace chứa file (để tính relDir tương đối). */
@@ -157,8 +183,9 @@ async function findPackageJsons(): Promise<PackageInfo[]> {
   packages.sort((a, b) => a.packageJsonPath.localeCompare(b.packageJsonPath));
 
   // Lọc theo scanMode/include/exclude (hàm thuần, có test).
-  // Membership tính theo từng workspace folder để relDir không lẫn giữa các root.
-  const options = readFilterOptions();
+  // Membership + cấu hình tính theo TỪNG workspace folder: relDir không lẫn
+  // giữa các root, và mỗi repo có thể tự khai báo scriptsRunner trong package.json.
+  const settings = readSettingsFilter();
   const byRoot = new Map<string, PackageInfo[]>();
   for (const pkg of packages) {
     const root = workspaceRootOf(pkg.packageJsonPath);
@@ -170,7 +197,12 @@ async function findPackageJsons(): Promise<PackageInfo[]> {
     }
   }
   const kept: PackageInfo[] = [];
-  for (const list of byRoot.values()) {
+  for (const [root, list] of byRoot) {
+    const options = mergeFilterOptions(
+      settings.options,
+      readRepoConfig(root),
+      settings.scanModeExplicit
+    );
     kept.push(...filterPackages(list, options));
   }
   kept.sort((a, b) => a.packageJsonPath.localeCompare(b.packageJsonPath));

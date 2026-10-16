@@ -8,7 +8,10 @@ import {
   parsePnpmWorkspaceYaml,
   matchesAnyGlob,
   filterPackages,
+  parseScriptsRunnerConfig,
+  mergeFilterOptions,
   type DiscoveredPackage,
+  type PackageFilterOptions,
 } from "../src/logic";
 
 test("scriptKey ghép cwd + tên script", () => {
@@ -157,4 +160,66 @@ test("filterPackages include là allowlist áp sau scanMode", () => {
     out.map((p) => p.relDir),
     ["libs/ui", "libs/core"]
   );
+});
+
+test("parseScriptsRunnerConfig đọc field hợp lệ", () => {
+  assert.deepEqual(
+    parseScriptsRunnerConfig({
+      scriptsRunner: { scanMode: "roots", exclude: ["**/packages/**"] },
+    }),
+    { scanMode: "roots", exclude: ["**/packages/**"] }
+  );
+  // Không khai báo -> {}
+  assert.deepEqual(parseScriptsRunnerConfig({}), {});
+  assert.deepEqual(parseScriptsRunnerConfig(null), {});
+  // scanMode sai -> bỏ; include lọc phần tử không phải string
+  assert.deepEqual(
+    parseScriptsRunnerConfig({
+      scriptsRunner: { scanMode: "bogus", include: ["a", 1, "b"] },
+    }),
+    { include: ["a", "b"] }
+  );
+});
+
+test("mergeFilterOptions: repo bổ sung khi settings không đặt rõ scanMode", () => {
+  const settings: PackageFilterOptions = {
+    scanMode: "all",
+    include: [],
+    exclude: ["**/dist/**"],
+  };
+  const merged = mergeFilterOptions(
+    settings,
+    { scanMode: "roots", exclude: ["**/packages/**"] },
+    false // settings scanMode KHÔNG đặt rõ -> dùng của repo
+  );
+  assert.equal(merged.scanMode, "roots");
+  assert.deepEqual(merged.exclude, ["**/dist/**", "**/packages/**"]); // union
+});
+
+test("mergeFilterOptions: settings đặt rõ thì thắng repo", () => {
+  const settings: PackageFilterOptions = {
+    scanMode: "all",
+    include: [],
+    exclude: [],
+  };
+  const merged = mergeFilterOptions(
+    settings,
+    { scanMode: "roots" },
+    true // settings scanMode đặt rõ
+  );
+  assert.equal(merged.scanMode, "all");
+});
+
+test("mergeFilterOptions: exclude union không trùng lặp", () => {
+  const settings: PackageFilterOptions = {
+    scanMode: "all",
+    include: [],
+    exclude: ["**/packages/**"],
+  };
+  const merged = mergeFilterOptions(
+    settings,
+    { exclude: ["**/packages/**", "**/examples/**"] },
+    false
+  );
+  assert.deepEqual(merged.exclude, ["**/packages/**", "**/examples/**"]);
 });

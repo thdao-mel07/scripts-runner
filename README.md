@@ -57,6 +57,29 @@ Hide noisy scripts from the sidebar to keep only the ones you run — hidden scr
 > You can also **remove individual groups** with the ✕ button on a folder;
 > restore them later via **Show Hidden Package Groups…** in the view title.
 
+### Per-repo config (`package.json`)
+
+Instead of per-machine settings, a repo can declare its own filtering in the
+**root `package.json`** via a `scriptsRunner` field, so everyone who opens the
+repo gets the same sidebar with no manual setup:
+
+```jsonc
+{
+  "name": "my-monorepo",
+  "scriptsRunner": {
+    "scanMode": "all",            // optional: all | roots | workspaces
+    "exclude": ["**/packages/**"], // hide library sub-packages
+    "include": []                  // optional allowlist
+  }
+}
+```
+
+How it combines with user/workspace settings:
+
+- `include` / `exclude` are **merged** (union) with any `scriptsSidebar.*` settings.
+- `scanMode` from settings wins **only if** you set it explicitly; otherwise the
+  repo's `scanMode` applies, else the default `all`.
+
 ## Requirements
 
 - VS Code `1.85.0` or newer.

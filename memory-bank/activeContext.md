@@ -1,6 +1,13 @@
 # Active Context
 
 ## Thay đổi mới nhất (chưa publish)
+- THÊM đọc cấu hình từ package.json gốc repo: field `scriptsRunner`
+  { scanMode?, include?, exclude? }. logic.ts có parseScriptsRunnerConfig +
+  mergeFilterOptions (include/exclude union với settings; scanMode: settings
+  thắng nếu đặt rõ qua inspect(), ngược lại dùng repo, rồi mặc định). tree.ts
+  đọc root package.json của từng workspace folder (readRepoConfig) + readSettingsFilter
+  (có scanModeExplicit qua cfg.inspect) rồi merge trước khi filterPackages.
+  Mục đích: repo tự khai báo, cả team khỏi cấu hình settings.json tay.
 - GỠ HẲN chế độ chạy ngầm (silent/child_process): bỏ command runScriptSilent,
   nút ▷, setting confirmSilentForLongRunning. Lý do: silent không có TTY nên
   script kiểm tra isTTY sẽ fail; chạy trong Terminal có TTY thật là đúng. Đã dọn

@@ -4,6 +4,13 @@
 
 <!-- Ghi thay đổi mới ở đây; `npm run release` sẽ tự gắn số version + ngày. -->
 
+### New
+- **Per-repo config via `package.json`.** A repo can declare filtering in a
+  `scriptsRunner` field of its root `package.json` (`scanMode` / `include` /
+  `exclude`), so the whole team gets the same sidebar without any per-machine
+  settings. `include`/`exclude` merge (union) with `scriptsSidebar.*` settings;
+  an explicitly-set `scriptsSidebar.scanMode` still wins.
+
 ## [0.3.2] - 2026-10-16
 
 ### Removed

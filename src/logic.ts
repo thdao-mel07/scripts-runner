@@ -71,6 +71,107 @@ export interface PackageFilterOptions {
   readonly exclude: readonly string[];
 }
 
+/**
+ * Cấu hình Scripts Runner khai báo ngay trong `package.json` gốc của repo
+ * (field `scriptsRunner`), để repo tự mô tả cách lọc mà không cần `settings.json`.
+ *
+ * @see {@linkcode parseScriptsRunnerConfig}
+ * @see {@linkcode mergeFilterOptions}
+ */
+export interface ScriptsRunnerConfig {
+  /** Ghi đè chế độ quét ở mức repo. @see {@linkcode ScanMode} */
+  readonly scanMode?: ScanMode;
+  /** Glob allowlist khai báo ở mức repo. */
+  readonly include?: readonly string[];
+  /** Glob blocklist khai báo ở mức repo. */
+  readonly exclude?: readonly string[];
+}
+
+/** Lọc mảng, chỉ giữ phần tử là string. */
+function stringArray(value: unknown): string[] | undefined {
+  if (!Array.isArray(value)) {
+    return undefined;
+  }
+  return value.filter((x): x is string => typeof x === "string");
+}
+
+/**
+ * Đọc field `scriptsRunner` từ nội dung đã parse của `package.json` gốc.
+ * Bỏ qua giá trị sai kiểu (vd scanMode không hợp lệ).
+ *
+ * @param json Nội dung `package.json` đã `JSON.parse`.
+ * @returns Cấu hình hợp lệ; `{}` nếu không khai báo.
+ * @see {@linkcode ScriptsRunnerConfig}
+ */
+export function parseScriptsRunnerConfig(json: unknown): ScriptsRunnerConfig {
+  const raw = (json as { scriptsRunner?: unknown } | null)?.scriptsRunner;
+  if (!raw || typeof raw !== "object") {
+    return {};
+  }
+  const cfg = raw as { scanMode?: unknown; include?: unknown; exclude?: unknown };
+  const out: {
+    scanMode?: ScanMode;
+    include?: string[];
+    exclude?: string[];
+  } = {};
+  if (
+    cfg.scanMode === "all" ||
+    cfg.scanMode === "roots" ||
+    cfg.scanMode === "workspaces"
+  ) {
+    out.scanMode = cfg.scanMode;
+  }
+  const include = stringArray(cfg.include);
+  if (include) {
+    out.include = include;
+  }
+  const exclude = stringArray(cfg.exclude);
+  if (exclude) {
+    out.exclude = exclude;
+  }
+  return out;
+}
+
+/** Gộp 2 mảng string, loại trùng, giữ thứ tự xuất hiện. */
+function union(
+  a: readonly string[],
+  b: readonly string[]
+): string[] {
+  return [...new Set([...a, ...b])];
+}
+
+/**
+ * Gộp cấu hình từ settings VS Code với cấu hình khai báo trong `package.json`.
+ *
+ * - `scanMode`: ưu tiên settings nếu người dùng đặt rõ (`settingsScanModeExplicit`),
+ *   ngược lại dùng của repo, cuối cùng là giá trị từ settings (mặc định).
+ * - `include` / `exclude`: hợp (union) cả hai, vì đều là bộ lọc cộng dồn.
+ *
+ * @param settings Cấu hình đọc từ settings (đã có mặc định).
+ * @param repo Cấu hình khai báo trong `package.json` gốc.
+ * @param settingsScanModeExplicit `scanMode` có được đặt rõ trong settings không.
+ * @see {@linkcode filterPackages}
+ */
+export function mergeFilterOptions(
+  settings: PackageFilterOptions,
+  repo: ScriptsRunnerConfig,
+  settingsScanModeExplicit: boolean
+): PackageFilterOptions {
+  let scanMode: ScanMode;
+  if (settingsScanModeExplicit) {
+    scanMode = settings.scanMode;
+  } else if (repo.scanMode) {
+    scanMode = repo.scanMode;
+  } else {
+    scanMode = settings.scanMode;
+  }
+  return {
+    scanMode,
+    include: union(settings.include, repo.include ?? []),
+    exclude: union(settings.exclude, repo.exclude ?? []),
+  };
+}
+
 /** Chuẩn hoá đường dẫn về dạng POSIX, bỏ dấu `/` thừa ở đầu/cuối. */
 function toPosix(p: string): string {
   return p.replace(/\\/g, "/").replace(/^\/+|\/+$/g, "");

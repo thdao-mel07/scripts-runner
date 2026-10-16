@@ -27,6 +27,8 @@
 - [x] scanMode (all/roots/workspaces) + include/exclude glob; đọc workspaces
   từ package.json + pnpm-workspace.yaml; hàm thuần trong logic.ts + 14 test.
 - [x] Remove group khỏi sidebar (hide folder) + khôi phục qua QuickPick.
+- [x] Đọc cấu hình exclude/include/scanMode từ field scriptsRunner trong
+  package.json gốc repo (merge với settings) — repo tự khai báo.
 - [x] Group mặc định thu gọn + nhớ trạng thái mở/đóng từng group (workspaceState).
 
 ## Todo (tiếp theo)
