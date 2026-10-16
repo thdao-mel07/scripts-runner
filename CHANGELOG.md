@@ -4,6 +4,12 @@
 
 <!-- Ghi thay đổi mới ở đây; `npm run release` sẽ tự gắn số version + ngày. -->
 
+### Removed
+- **Silent / background run mode.** Scripts now always run in the integrated
+  terminal (which has a real TTY), so interactive and TTY-requiring scripts work
+  correctly. Removed the `▷` silent button, the `scriptsSidebar.runScriptSilent`
+  command, and the `scriptsSidebar.confirmSilentForLongRunning` setting.
+
 ### New
 - **Collapsed by default + remembered expand/collapse.** Package groups now
   start collapsed, and each group's open/closed state is saved per-workspace, so

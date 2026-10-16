@@ -5,7 +5,7 @@
 - [x] TreeView sidebar "Scripts" trên Activity Bar
 - [x] Đọc & hiển thị scripts từ package.json (+ nội dung command)
 - [x] Chạy script qua terminal (reuse terminal)
-- [x] Chạy script chế độ nền (child_process + notification + progress/cancel)
+- [x] ~~Chạy script chế độ nền (silent)~~ (ĐÃ GỠ — silent không có TTY, dùng terminal)
 - [x] Detect package manager npm/yarn/pnpm qua lockfile
 - [x] Auto refresh bằng FileSystemWatcher
 - [x] Hỗ trợ monorepo (gom theo folder)

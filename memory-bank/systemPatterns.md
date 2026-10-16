@@ -7,8 +7,8 @@ extension/
 │   ├── extension.ts      # mỏng: activate/deactivate + đăng ký command
 │   ├── logic.ts          # hàm THUẦN (pure) - có test, không import vscode
 │   ├── store.ts          # danh sách script bị ẩn (hide) - workspaceState
-│   ├── running.ts        # map script đang chạy + status bar + kill
-│   ├── runner.ts         # detectPM + chạy terminal/silent + output channel
+│   ├── running.ts        # map script đang chạy (terminal) + status bar
+│   ├── runner.ts         # detectPM + chạy script qua terminal
 │   ├── tree.ts           # ScriptItem + ScriptProvider + findPackageJsons
 │   └── codelens.ts       # CodeLens cho package.json
 ├── test/
@@ -35,7 +35,7 @@ extension/
   JSON, chỉ giữ package có scripts.
 - `detectPackageManager(dir)`: dò lockfile lên tối đa 10 cấp cha; ưu tiên
   setting nếu khác "auto".
-- `runInTerminal(item)` / `runSilent(item)`: 2 chế độ chạy.
+- `runScriptInTerminal(item)`: chạy script qua terminal (chế độ duy nhất).
 - Terminal quản lý qua `Map<key, Terminal>` với key = `cwd::scriptName`:
   - Tên tab terminal = tên script (không phải "Scripts").
   - Set `cwd` lúc tạo terminal → KHÔNG gửi lệnh `cd` (tránh dài dòng).
@@ -67,5 +67,5 @@ extension/
 - TypeScript strict, không dùng `any`.
 - Luôn try/catch khi đọc/parse package.json để không crash extension.
 - `external: ["vscode"]` trong esbuild — không bao giờ bundle module vscode.
-- Chạy nền (silent) chỉ hợp script ngắn; watch/dev server phải dùng terminal.
+- Mọi script chạy trong terminal (có TTY thật) — không còn chế độ silent.
 - Cây có nhiều package.json → hiển thị theo folder; 1 package → phẳng.

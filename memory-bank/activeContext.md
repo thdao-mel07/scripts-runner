@@ -1,6 +1,13 @@
 # Active Context
 
 ## Thay đổi mới nhất (chưa publish)
+- GỠ HẲN chế độ chạy ngầm (silent/child_process): bỏ command runScriptSilent,
+  nút ▷, setting confirmSilentForLongRunning. Lý do: silent không có TTY nên
+  script kiểm tra isTTY sẽ fail; chạy trong Terminal có TTY thật là đúng. Đã dọn
+  runner.ts (chỉ còn runScriptInTerminal, bỏ spawn/outputChannel), running.ts
+  (terminal-only, bỏ child/markChildRunning/killChildTree), logic.ts (bỏ
+  isLongRunningScript + firstLines), extension.ts (bỏ outputChannel/initRunner,
+  runSilent). Test còn 12, typecheck + build sạch.
 - THÊM nhớ trạng thái mở/đóng group: mặc định THU GỌN (Collapsed). store.ts có
   getExpandedFolders/isFolderExpanded/setFolderExpanded (key
   "scriptsSidebar.expandedFolders", theo packageJsonPath). tree.ts set

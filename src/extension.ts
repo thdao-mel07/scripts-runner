@@ -19,27 +19,21 @@ import {
   disposeAll,
   allEntries,
 } from "./running";
-import {
-  initRunner,
-  runScriptInTerminal,
-  runScriptSilent,
-} from "./runner";
+import { runScriptInTerminal } from "./runner";
 import { ScriptItem, ScriptProvider } from "./tree";
 
-/** Lấy (packageJsonPath, scriptName, scriptValue) từ ScriptItem hoặc object CodeLens */
-function resolveTarget(item: unknown):
-  | { packageJsonPath: string; scriptName: string; scriptValue?: string }
-  | undefined {
+/** Lấy (packageJsonPath, scriptName) từ ScriptItem */
+function resolveTarget(
+  item: unknown
+): { packageJsonPath: string; scriptName: string } | undefined {
   const it = item as {
     packageJsonPath?: string;
     scriptName?: string;
-    scriptValue?: string;
   };
   if (it?.packageJsonPath && it.scriptName) {
     return {
       packageJsonPath: it.packageJsonPath,
       scriptName: it.scriptName,
-      scriptValue: it.scriptValue,
     };
   }
   return undefined;
@@ -129,7 +123,6 @@ async function showRunningQuickPick(): Promise<void> {
   const pick = await vscode.window.showQuickPick(
     entries.map((e) => ({
       label: `$(debug-stop) ${e.scriptName}`,
-      description: e.terminal ? "terminal" : "silent",
       entry: e,
     })),
     { placeHolder: "Select a running script to stop" }
@@ -142,7 +135,6 @@ async function showRunningQuickPick(): Promise<void> {
 export function activate(context: vscode.ExtensionContext): void {
   initStore(context);
 
-  const outputChannel = vscode.window.createOutputChannel("Scripts Runner");
   const statusBar = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Left,
     0
@@ -150,7 +142,6 @@ export function activate(context: vscode.ExtensionContext): void {
   statusBar.command = "scriptsSidebar.showRunning";
 
   const provider = new ScriptProvider();
-  initRunner(outputChannel);
   initRunning(statusBar, () => provider.refresh());
 
   const treeView = vscode.window.createTreeView("scriptView", {
@@ -176,12 +167,6 @@ export function activate(context: vscode.ExtensionContext): void {
       runScriptInTerminal(t.packageJsonPath, t.scriptName);
     }
   };
-  const runSilent = (item: unknown): void => {
-    const t = resolveTarget(item);
-    if (t) {
-      runScriptSilent(t.packageJsonPath, t.scriptName, t.scriptValue);
-    }
-  };
   const stop = (item: unknown): void => {
     const t = resolveTarget(item);
     if (t) {
@@ -195,10 +180,8 @@ export function activate(context: vscode.ExtensionContext): void {
 
   context.subscriptions.push(
     treeView,
-    outputChannel,
     statusBar,
     vscode.commands.registerCommand("scriptsSidebar.runScript", run),
-    vscode.commands.registerCommand("scriptsSidebar.runScriptSilent", runSilent),
     vscode.commands.registerCommand("scriptsSidebar.stopScript", stop),
     vscode.commands.registerCommand(
       "scriptsSidebar.hideScript",

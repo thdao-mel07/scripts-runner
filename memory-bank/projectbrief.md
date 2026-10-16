@@ -23,8 +23,7 @@ các npm/yarn/pnpm script mà không phải nhớ hoặc gõ tay lệnh.
 ## Tính năng cốt lõi
 - Tab riêng "Scripts" trên Activity Bar (TreeView).
 - Hiển thị danh sách script + nội dung command kèm theo.
-- Click để chạy; 2 chế độ: qua Terminal (reuse) hoặc chạy nền (child_process
-  + notification).
+- Click để chạy qua Terminal (reuse, có TTY thật).
 - Tự phát hiện package manager (npm/yarn/pnpm) qua lockfile.
 - Auto refresh khi package.json thay đổi (FileSystemWatcher).
 - Hỗ trợ monorepo: nhiều package.json gom theo folder.

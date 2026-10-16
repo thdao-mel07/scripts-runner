@@ -66,12 +66,6 @@
         "icon": "$(play)"
       },
       {
-        "command": "scriptsSidebar.runScriptSilent",
-        "title": "Run Script (silent, report via notification)",
-        "category": "Scripts Runner",
-        "icon": "$(run-below)"
-      },
-      {
         "command": "scriptsSidebar.stopScript",
         "title": "Stop Script",
         "category": "Scripts Runner",
@@ -121,10 +115,6 @@
           "when": "false"
         },
         {
-          "command": "scriptsSidebar.runScriptSilent",
-          "when": "false"
-        },
-        {
           "command": "scriptsSidebar.stopScript",
           "when": "false"
         },
@@ -168,11 +158,6 @@
           "group": "inline@1"
         },
         {
-          "command": "scriptsSidebar.runScriptSilent",
-          "when": "view == scriptView && viewItem =~ /^script(?!.*Running)/",
-          "group": "inline@2"
-        },
-        {
           "command": "scriptsSidebar.hideScript",
           "when": "view == scriptView && viewItem =~ /^script(?!.*Running)/",
           "group": "inline@3"
@@ -202,11 +187,6 @@
           "type": "boolean",
           "default": true,
           "description": "Reuse each script's terminal instead of creating a new one every run."
-        },
-        "scriptsSidebar.confirmSilentForLongRunning": {
-          "type": "boolean",
-          "default": true,
-          "description": "Warn before running a long-running script (watch/dev/start) in silent mode, since it may never finish."
         },
         "scriptsSidebar.scanMode": {
           "type": "string",

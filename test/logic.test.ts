@@ -4,8 +4,6 @@ import {
   scriptKey,
   buildRunCommand,
   pickPackageManager,
-  isLongRunningScript,
-  firstLines,
   parseWorkspacesField,
   parsePnpmWorkspaceYaml,
   matchesAnyGlob,
@@ -28,28 +26,6 @@ test("pickPackageManager ưu tiên pnpm > yarn > npm", () => {
   assert.equal(pickPackageManager({ yarn: true, npm: true }), "yarn");
   assert.equal(pickPackageManager({ npm: true }), "npm");
   assert.equal(pickPackageManager({}), "npm");
-});
-
-test("isLongRunningScript nhận diện script chạy dài", () => {
-  assert.equal(isLongRunningScript("start:dev"), true);
-  assert.equal(isLongRunningScript("watch"), true);
-  assert.equal(isLongRunningScript("dev"), true);
-  assert.equal(isLongRunningScript("start:metro", "react-native start"), true);
-  assert.equal(isLongRunningScript("build", "tsc -w"), true);
-  assert.equal(isLongRunningScript("test", "jest --watch"), true);
-  // Script ngắn thì không
-  assert.equal(isLongRunningScript("lint", "eslint ."), false);
-  assert.equal(isLongRunningScript("build", "tsc"), false);
-  assert.equal(isLongRunningScript("format", "prettier --write ."), false);
-});
-
-test("firstLines rút gọn và gộp khoảng trắng", () => {
-  assert.equal(firstLines(""), "");
-  assert.equal(firstLines("a\nb\nc"), "a b c");
-  const long = "x".repeat(300);
-  const out = firstLines(long, 200);
-  assert.equal(out.length, 201); // 200 ký tự + dấu …
-  assert.ok(out.endsWith("…"));
 });
 
 

@@ -9,8 +9,7 @@
 
 ## API chính dùng
 - `vscode.window.createTreeView` + `TreeDataProvider` — sidebar list
-- `vscode.window.createTerminal` — chạy script qua terminal
-- `child_process.exec` — chạy script chế độ nền (silent)
+- `vscode.window.createTerminal` — chạy script qua terminal (chế độ duy nhất)
 - `vscode.workspace.findFiles` — quét package.json (bỏ node_modules)
 - `vscode.workspace.createFileSystemWatcher` — auto refresh
 
@@ -20,8 +19,7 @@
 ## Test
 - Pure logic tách ra `src/logic.ts` (không import vscode).
 - Test: `npm test` = `node --import tsx --test test/*.test.ts` (node:test + tsx).
-- Silent mode dùng `spawn(cmd,{shell:true,detached:true})` + kill process
-  group `process.kill(-pid)` để dừng cả cây con.
+- Dừng script = `terminal.dispose()` (chỉ chạy qua terminal, không còn silent).
 
 ## Key Dependencies
 - devDependencies: `@types/vscode`, `@types/node`, `esbuild`, `typescript`,

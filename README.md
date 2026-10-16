@@ -13,9 +13,8 @@
 ### ▶️ One-click run
 Every script in your `package.json` shows up in a dedicated **Scripts Runner** view on the Activity Bar. Click a script to run it, or use the inline buttons that appear on hover. Each script's command is shown right next to its name.
 
-### 🏃 Two run modes
-- **Terminal** — keeps full logs and supports `watch`, dev servers, and interactive commands. The terminal tab is named after the script and is reused per script.
-- **Silent** — runs in the background and reports the result via a notification. Perfect for quick tasks like `lint` or `format`.
+### 🏃 Runs in the terminal
+Scripts run in VS Code's integrated terminal, so you keep full logs and support for `watch`, dev servers, and interactive commands. The terminal tab is named after the script and is reused per script.
 
 ### ⏹ Stop & running state
 A running script shows a spinner and a **stop** button so you always know what's live. Clicking a running script focuses its terminal instead of starting it again — no more accidentally restarting your dev server.
@@ -37,7 +36,6 @@ Hide noisy scripts from the sidebar to keep only the ones you run — hidden scr
 1. Open a project that has a `package.json` with a `scripts` section.
 2. Open the **Scripts Runner** view in the Activity Bar (left side).
 3. **Click** a script to run it in the terminal. On hover you get:
-   - `▷` run silently
    - `🙈` hide from sidebar
    - `⏹` stop (while running)
 4. To show hidden scripts again: right-click in `package.json` → **Show Hidden Scripts…**

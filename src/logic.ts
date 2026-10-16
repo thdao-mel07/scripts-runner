@@ -35,27 +35,6 @@ export function pickPackageManager(found: {
 }
 
 /**
- * Đoán script "chạy dài" (watch/dev server) — không nên chạy ở chế độ silent
- * vì sẽ không bao giờ kết thúc.
- */
-export function isLongRunningScript(name: string, value?: string): boolean {
-  const haystack = `${name} ${value ?? ""}`.toLowerCase();
-  // Các từ khóa thường gặp của lệnh chạy nền/watch
-  return /(^|[\s:._-])(watch|dev|serve|start|nodemon|tsc -w|--watch|storybook|vite|webpack serve|metro)($|[\s:._-])/.test(
-    haystack
-  );
-}
-
-/** Rút gọn output nhiều dòng để hiện trong thông báo (mặc định 200 ký tự) */
-export function firstLines(text: string, max = 200): string {
-  if (!text) {
-    return "";
-  }
-  const trimmed = text.length > max ? text.slice(0, max) + "…" : text;
-  return trimmed.replace(/\s+/g, " ");
-}
-
-/**
  * Chế độ quét package.json hiển thị trên sidebar.
  *
  * - `all`: mọi `package.json` có scripts (bỏ `node_modules`). Mặc định.
