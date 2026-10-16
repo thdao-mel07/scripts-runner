@@ -4,6 +4,8 @@
 
 <!-- Ghi thay đổi mới ở đây; `npm run release` sẽ tự gắn số version + ngày. -->
 
+## [0.3.2] - 2026-10-16
+
 ### Removed
 - **Silent / background run mode.** Scripts now always run in the integrated
   terminal (which has a real TTY), so interactive and TTY-requiring scripts work
