@@ -1,6 +1,29 @@
 # Active Context
 
 ## Thay đổi mới nhất (chưa publish)
+- THÊM nhớ trạng thái mở/đóng group: mặc định THU GỌN (Collapsed). store.ts có
+  getExpandedFolders/isFolderExpanded/setFolderExpanded (key
+  "scriptsSidebar.expandedFolders", theo packageJsonPath). tree.ts set
+  collapsibleState theo state. extension.ts nghe treeView.onDidExpandElement /
+  onDidCollapseElement để lưu. Lưu riêng từng workspace.
+- THÊM "remove group" (hide folder): nút inline ✕ trên mỗi folder
+  (scriptsSidebar.hideFolder), lưu workspaceState key
+  "scriptsSidebar.hiddenFolders" theo packageJsonPath tuyệt đối. Khôi phục:
+  "Show Hidden Package Groups…" (scriptsSidebar.showHiddenFolders) ở view title
+  + chuột phải trong package.json (QuickPick multi-select). store.ts có
+  getHiddenFolders/isFolderHidden/addHiddenFolder/removeHiddenFolder; tree.ts bỏ
+  qua folder bị ẩn. Khác với setting exclude (glob, mọi repo) — đây là xoá thủ
+  công từng group. (Phần cache "hiện nhanh hơn" để làm sau.)
+- THÊM lọc package cho monorepo: setting `scriptsSidebar.scanMode`
+  (all | roots | workspaces, default **all** để tương thích ngược),
+  `scriptsSidebar.include` / `scriptsSidebar.exclude` (mảng glob khớp đường dẫn
+  package.json tương đối workspace folder). Logic lọc thuần nằm trong
+  `src/logic.ts` (filterPackages + parseWorkspacesField + parsePnpmWorkspaceYaml
+  + globToRegExp/matchesAnyGlob), có 14 test. tree.ts đọc workspaces từ
+  package.json + pnpm-workspace.yaml, tính relDir theo từng workspace folder rồi
+  gọi filterPackages. Refresh khi settings đổi đã có sẵn (affectsConfiguration).
+
+
 - Bỏ Favorites/pin, bỏ alias, bỏ CodeLens, bỏ nút inline Run terminal.
 - THÊM: ẩn script (hide) - script ẩn bị LOẠI HẲN khỏi sidebar (không có
   nhóm Hidden). Hiện lại bằng CHUỘT PHẢI trong file package.json ->

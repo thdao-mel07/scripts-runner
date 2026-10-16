@@ -1,9 +1,16 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
-import { scriptKey } from "./logic";
+import {
+  scriptKey,
+  filterPackages,
+  parseWorkspacesField,
+  parsePnpmWorkspaceYaml,
+  type DiscoveredPackage,
+  type ScanMode,
+} from "./logic";
 import { isRunning } from "./running";
-import { isHidden } from "./store";
+import { isHidden, isFolderHidden, isFolderExpanded } from "./store";
 
 type ItemKind = "folder" | "script";
 
@@ -55,14 +62,52 @@ export class ScriptItem extends vscode.TreeItem {
   }
 }
 
-interface PackageInfo {
+interface PackageInfo extends DiscoveredPackage {
   dir: string;
-  packageJsonPath: string;
   name: string;
   scripts: Record<string, string>;
 }
 
-/** Tìm tất cả package.json trong workspace (bỏ node_modules) */
+/** Đọc cấu hình lọc package từ settings `scriptsSidebar`. */
+function readFilterOptions(): {
+  scanMode: ScanMode;
+  include: string[];
+  exclude: string[];
+} {
+  const cfg = vscode.workspace.getConfiguration("scriptsSidebar");
+  const scanMode = cfg.get<ScanMode>("scanMode", "all");
+  const include = cfg.get<string[]>("include", []);
+  const exclude = cfg.get<string[]>("exclude", []);
+  return { scanMode, include, exclude };
+}
+
+/** Thư mục workspace chứa file (để tính relDir tương đối). */
+function workspaceRootOf(fsPath: string): string {
+  const folder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(fsPath));
+  return folder ? folder.uri.fsPath : path.dirname(fsPath);
+}
+
+/** relDir POSIX của thư mục package so với workspace folder (gốc = ""). */
+function toRelDir(dir: string, root: string): string {
+  const rel = path.relative(root, dir);
+  return rel.split(path.sep).join("/");
+}
+
+/** Đọc glob workspaces khai báo cho 1 package (package.json + pnpm-workspace.yaml). */
+function readWorkspaceGlobs(dir: string, json: unknown): string[] {
+  const globs = parseWorkspacesField(json);
+  try {
+    const pnpmPath = path.join(dir, "pnpm-workspace.yaml");
+    if (fs.existsSync(pnpmPath)) {
+      globs.push(...parsePnpmWorkspaceYaml(fs.readFileSync(pnpmPath, "utf-8")));
+    }
+  } catch {
+    // bỏ qua nếu đọc pnpm-workspace.yaml lỗi
+  }
+  return globs;
+}
+
+/** Tìm tất cả package.json trong workspace (bỏ node_modules) rồi lọc theo settings */
 async function findPackageJsons(): Promise<PackageInfo[]> {
   const folders = vscode.workspace.workspaceFolders;
   if (!folders || folders.length === 0) {
@@ -95,11 +140,14 @@ async function findPackageJsons(): Promise<PackageInfo[]> {
         continue;
       }
       const dir = path.dirname(uri.fsPath);
+      const root = workspaceRootOf(uri.fsPath);
       packages.push({
         dir,
         packageJsonPath: uri.fsPath,
         name: json.name ?? path.basename(dir),
         scripts,
+        relDir: toRelDir(dir, root),
+        workspaceGlobs: readWorkspaceGlobs(dir, json),
       });
     } catch {
       continue; // bỏ qua package.json lỗi cú pháp
@@ -107,7 +155,26 @@ async function findPackageJsons(): Promise<PackageInfo[]> {
   }
 
   packages.sort((a, b) => a.packageJsonPath.localeCompare(b.packageJsonPath));
-  return packages;
+
+  // Lọc theo scanMode/include/exclude (hàm thuần, có test).
+  // Membership tính theo từng workspace folder để relDir không lẫn giữa các root.
+  const options = readFilterOptions();
+  const byRoot = new Map<string, PackageInfo[]>();
+  for (const pkg of packages) {
+    const root = workspaceRootOf(pkg.packageJsonPath);
+    const list = byRoot.get(root);
+    if (list) {
+      list.push(pkg);
+    } else {
+      byRoot.set(root, [pkg]);
+    }
+  }
+  const kept: PackageInfo[] = [];
+  for (const list of byRoot.values()) {
+    kept.push(...filterPackages(list, options));
+  }
+  kept.sort((a, b) => a.packageJsonPath.localeCompare(b.packageJsonPath));
+  return kept;
 }
 
 export class ScriptProvider implements vscode.TreeDataProvider<ScriptItem> {
@@ -140,10 +207,18 @@ export class ScriptProvider implements vscode.TreeDataProvider<ScriptItem> {
     // Script đã ẩn bị loại hẳn khỏi UI; hiện lại bằng chuột phải trong
     // file package.json (command scriptsSidebar.showHidden).
     for (const pkg of packages) {
+      // Group bị ẩn thủ công -> loại khỏi sidebar (khôi phục qua showHiddenFolders)
+      if (isFolderHidden(pkg.packageJsonPath)) {
+        continue;
+      }
+      // Mặc định thu gọn; mở lại đúng các group user từng mở (lưu workspaceState).
+      const collapsibleState = isFolderExpanded(pkg.packageJsonPath)
+        ? vscode.TreeItemCollapsibleState.Expanded
+        : vscode.TreeItemCollapsibleState.Collapsed;
       const folder = new ScriptItem(
         "folder",
         pkg.name,
-        vscode.TreeItemCollapsibleState.Expanded,
+        collapsibleState,
         undefined,
         undefined,
         pkg.packageJsonPath

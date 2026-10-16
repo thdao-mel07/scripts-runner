@@ -48,6 +48,16 @@ Hide noisy scripts from the sidebar to keep only the ones you run — hidden scr
 |---|---|---|
 | `scriptsSidebar.packageManager` | `auto` | `auto` / `npm` / `yarn` / `pnpm`. `auto` detects from the lockfile. |
 | `scriptsSidebar.reuseTerminal` | `true` | Reuse each script's terminal instead of creating a new one every run. |
+| `scriptsSidebar.scanMode` | `all` | Which `package.json` files to list: `all`, `roots` (hide workspace members declared in a parent's `workspaces` / `pnpm-workspace.yaml`), or `workspaces` (roots that declare workspaces + their members). |
+| `scriptsSidebar.include` | `[]` | Allowlist of globs matched against each `package.json` path relative to the workspace folder (e.g. `apps/**`). When non-empty, only matching packages are shown. |
+| `scriptsSidebar.exclude` | `[]` | Blocklist of globs (e.g. `**/packages/**` to hide monorepo libraries). |
+
+> **Monorepo tip:** if the sidebar shows too many sub-packages (e.g. `@scope/*`
+> libraries that only have a `typecheck` script), set `scriptsSidebar.scanMode`
+> to `roots`, or add an `exclude` glob like `**/packages/**`.
+>
+> You can also **remove individual groups** with the ✕ button on a folder;
+> restore them later via **Show Hidden Package Groups…** in the view title.
 
 ## Requirements
 

@@ -1,7 +1,16 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import { scriptKey } from "./logic";
-import { initStore, addHidden, removeHidden, getHiddenSet } from "./store";
+import {
+  initStore,
+  addHidden,
+  removeHidden,
+  getHiddenSet,
+  addHiddenFolder,
+  removeHiddenFolder,
+  getHiddenFolders,
+  setFolderExpanded,
+} from "./store";
 import {
   initRunning,
   onTerminalClosed,
@@ -84,6 +93,33 @@ async function showHidden(
   refresh();
 }
 
+/** Hiện lại các group (package.json) đã ẩn khỏi sidebar qua QuickPick. */
+async function showHiddenFolders(refresh: () => void): Promise<void> {
+  const hidden = getHiddenFolders();
+  if (hidden.size === 0) {
+    vscode.window.showInformationMessage("No hidden package groups.");
+    return;
+  }
+  const picks = await vscode.window.showQuickPick(
+    [...hidden].map((p) => ({
+      label: path.basename(path.dirname(p)),
+      description: vscode.workspace.asRelativePath(p),
+      pkgPath: p,
+    })),
+    {
+      placeHolder: "Select package group(s) to show in the sidebar again",
+      canPickMany: true,
+    }
+  );
+  if (!picks || picks.length === 0) {
+    return;
+  }
+  for (const p of picks) {
+    await removeHiddenFolder(p.pkgPath);
+  }
+  refresh();
+}
+
 /** Click status bar -> chọn 1 script đang chạy để dừng */
 async function showRunningQuickPick(): Promise<void> {
   const entries = allEntries();
@@ -120,6 +156,18 @@ export function activate(context: vscode.ExtensionContext): void {
   const treeView = vscode.window.createTreeView("scriptView", {
     treeDataProvider: provider,
     showCollapseAll: true,
+  });
+
+  // Nhớ trạng thái mở/đóng từng group để lần sau khởi động giữ nguyên.
+  treeView.onDidExpandElement((e) => {
+    if (e.element.kind === "folder" && e.element.packageJsonPath) {
+      void setFolderExpanded(e.element.packageJsonPath, true);
+    }
+  });
+  treeView.onDidCollapseElement((e) => {
+    if (e.element.kind === "folder" && e.element.packageJsonPath) {
+      void setFolderExpanded(e.element.packageJsonPath, false);
+    }
   });
 
   const run = (item: unknown): void => {
@@ -165,6 +213,18 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand(
       "scriptsSidebar.showHidden",
       (uri?: vscode.Uri) => showHidden(uri, () => provider.refresh())
+    ),
+    vscode.commands.registerCommand(
+      "scriptsSidebar.hideFolder",
+      async (item: ScriptItem) => {
+        if (item?.packageJsonPath) {
+          await addHiddenFolder(item.packageJsonPath);
+          provider.refresh();
+        }
+      }
+    ),
+    vscode.commands.registerCommand("scriptsSidebar.showHiddenFolders", () =>
+      showHiddenFolders(() => provider.refresh())
     ),
     vscode.commands.registerCommand(
       "scriptsSidebar.showRunning",

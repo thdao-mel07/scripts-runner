@@ -90,6 +90,18 @@
         "icon": "$(eye)"
       },
       {
+        "command": "scriptsSidebar.hideFolder",
+        "title": "Remove from sidebar",
+        "category": "Scripts Runner",
+        "icon": "$(close)"
+      },
+      {
+        "command": "scriptsSidebar.showHiddenFolders",
+        "title": "Show Hidden Package Groups…",
+        "category": "Scripts Runner",
+        "icon": "$(eye)"
+      },
+      {
         "command": "scriptsSidebar.showRunning",
         "title": "Show running scripts",
         "category": "Scripts Runner",
@@ -119,6 +131,10 @@
         {
           "command": "scriptsSidebar.hideScript",
           "when": "false"
+        },
+        {
+          "command": "scriptsSidebar.hideFolder",
+          "when": "false"
         }
       ],
       "editor/context": [
@@ -126,6 +142,11 @@
           "command": "scriptsSidebar.showHidden",
           "when": "resourceFilename == package.json",
           "group": "scriptsSidebar@1"
+        },
+        {
+          "command": "scriptsSidebar.showHiddenFolders",
+          "when": "resourceFilename == package.json",
+          "group": "scriptsSidebar@2"
         }
       ],
       "view/title": [
@@ -133,6 +154,11 @@
           "command": "scriptsSidebar.refresh",
           "when": "view == scriptView",
           "group": "navigation@1"
+        },
+        {
+          "command": "scriptsSidebar.showHiddenFolders",
+          "when": "view == scriptView",
+          "group": "navigation@2"
         }
       ],
       "view/item/context": [
@@ -150,6 +176,11 @@
           "command": "scriptsSidebar.hideScript",
           "when": "view == scriptView && viewItem =~ /^script(?!.*Running)/",
           "group": "inline@3"
+        },
+        {
+          "command": "scriptsSidebar.hideFolder",
+          "when": "view == scriptView && viewItem == folder",
+          "group": "inline@1"
         }
       ]
     },
@@ -176,6 +207,37 @@
           "type": "boolean",
           "default": true,
           "description": "Warn before running a long-running script (watch/dev/start) in silent mode, since it may never finish."
+        },
+        "scriptsSidebar.scanMode": {
+          "type": "string",
+          "enum": [
+            "all",
+            "roots",
+            "workspaces"
+          ],
+          "enumDescriptions": [
+            "Show every package.json that has scripts (ignoring node_modules).",
+            "Show only root packages; hide workspace members declared in a parent's \"workspaces\" / pnpm-workspace.yaml.",
+            "Show root packages that declare workspaces plus the members they declare; drop unrelated packages."
+          ],
+          "default": "all",
+          "description": "Which package.json files to list in the sidebar."
+        },
+        "scriptsSidebar.include": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Allowlist of globs matched against each package.json path relative to the workspace folder (e.g. \"apps/**\"). When non-empty, only matching packages are shown."
+        },
+        "scriptsSidebar.exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Blocklist of globs matched against each package.json path relative to the workspace folder (e.g. \"**/packages/**\" to hide monorepo libraries)."
         }
       }
     }

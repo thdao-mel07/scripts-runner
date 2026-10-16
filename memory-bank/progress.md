@@ -23,6 +23,16 @@
 - [x] Node package thu gọn được (kể cả 1 package) + nhớ trạng thái qua id
 - [x] Auto-clear trạng thái khi terminal đóng / lệnh kết thúc (shell integration best-effort)
 
+## Done (lọc package monorepo)
+- [x] scanMode (all/roots/workspaces) + include/exclude glob; đọc workspaces
+  từ package.json + pnpm-workspace.yaml; hàm thuần trong logic.ts + 14 test.
+- [x] Remove group khỏi sidebar (hide folder) + khôi phục qua QuickPick.
+- [x] Group mặc định thu gọn + nhớ trạng thái mở/đóng từng group (workspaceState).
+
+## Todo (tiếp theo)
+- [ ] Cache (bộ nhớ + workspaceState) để sidebar hiện tức thì khi mở lại source,
+  quét nền revalidate. (Phần B của plan, hoãn lại theo yêu cầu user.)
+
 ## In Progress
 - [ ] User test bằng F5 trong Extension Development Host (v0.2.0)
 

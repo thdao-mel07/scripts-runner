@@ -6,6 +6,11 @@ import {
   pickPackageManager,
   isLongRunningScript,
   firstLines,
+  parseWorkspacesField,
+  parsePnpmWorkspaceYaml,
+  matchesAnyGlob,
+  filterPackages,
+  type DiscoveredPackage,
 } from "../src/logic";
 
 test("scriptKey ghép cwd + tên script", () => {
@@ -47,3 +52,133 @@ test("firstLines rút gọn và gộp khoảng trắng", () => {
   assert.ok(out.endsWith("…"));
 });
 
+
+test("parseWorkspacesField đọc cả 2 dạng", () => {
+  assert.deepEqual(parseWorkspacesField({ workspaces: ["packages/*"] }), [
+    "packages/*",
+  ]);
+  assert.deepEqual(
+    parseWorkspacesField({ workspaces: { packages: ["apps/*", "libs/*"] } }),
+    ["apps/*", "libs/*"]
+  );
+  assert.deepEqual(parseWorkspacesField({}), []);
+  assert.deepEqual(parseWorkspacesField(null), []);
+});
+
+test("parsePnpmWorkspaceYaml chỉ lấy khối packages", () => {
+  const yaml = [
+    "packages:",
+    "  - 'packages/*'",
+    '  - "apps/**"',
+    "  - tools/cli",
+    "catalog:",
+    "  react: ^18",
+  ].join("\n");
+  assert.deepEqual(parsePnpmWorkspaceYaml(yaml), [
+    "packages/*",
+    "apps/**",
+    "tools/cli",
+  ]);
+});
+
+test("matchesAnyGlob hỗ trợ *, ** và ?", () => {
+  assert.equal(matchesAnyGlob("packages/foo", ["packages/*"]), true);
+  assert.equal(matchesAnyGlob("packages/foo/bar", ["packages/*"]), false);
+  assert.equal(matchesAnyGlob("a/b/c/package.json", ["**/package.json"]), true);
+  assert.equal(matchesAnyGlob("app/packages/x/package.json", ["**/packages/**"]), true);
+  assert.equal(matchesAnyGlob("app/src/package.json", ["**/packages/**"]), false);
+});
+
+function pkg(relDir: string, workspaceGlobs: string[] = []): DiscoveredPackage {
+  return {
+    packageJsonPath: `/ws/${relDir === "" ? "" : relDir + "/"}package.json`,
+    relDir,
+    workspaceGlobs,
+  };
+}
+
+test("filterPackages scanMode=all giữ nguyên tất cả", () => {
+  const pkgs = [pkg(""), pkg("packages/a"), pkg("packages/b")];
+  const out = filterPackages(pkgs, { scanMode: "all", include: [], exclude: [] });
+  assert.equal(out.length, 3);
+});
+
+test("filterPackages scanMode=roots bỏ workspace member", () => {
+  const pkgs = [
+    pkg("", ["packages/*"]),
+    pkg("packages/a"),
+    pkg("packages/b"),
+    pkg("standalone"),
+  ];
+  const out = filterPackages(pkgs, {
+    scanMode: "roots",
+    include: [],
+    exclude: [],
+  });
+  assert.deepEqual(
+    out.map((p) => p.relDir),
+    ["", "standalone"]
+  );
+});
+
+test("filterPackages roots xử lý monorepo lồng nhau", () => {
+  // mfe-platform-dmx khai báo packages/*, các @dmx/* là member
+  const pkgs = [
+    pkg("mini-web-shop"),
+    pkg("mfe-platform-dmx", ["packages/*"]),
+    pkg("mfe-platform-dmx/packages/analytics"),
+    pkg("mfe-platform-dmx/packages/api-client"),
+  ];
+  const out = filterPackages(pkgs, {
+    scanMode: "roots",
+    include: [],
+    exclude: [],
+  });
+  assert.deepEqual(
+    out.map((p) => p.relDir),
+    ["mini-web-shop", "mfe-platform-dmx"]
+  );
+});
+
+test("filterPackages scanMode=workspaces chỉ giữ root có workspaces + member", () => {
+  const pkgs = [
+    pkg("", ["packages/*"]),
+    pkg("packages/a"),
+    pkg("standalone"), // không thuộc workspace nào -> bị bỏ
+  ];
+  const out = filterPackages(pkgs, {
+    scanMode: "workspaces",
+    include: [],
+    exclude: [],
+  });
+  assert.deepEqual(
+    out.map((p) => p.relDir),
+    ["", "packages/a"]
+  );
+});
+
+test("filterPackages exclude loại theo glob đường dẫn package.json", () => {
+  const pkgs = [pkg("app"), pkg("app/packages/x"), pkg("app/packages/y")];
+  const out = filterPackages(pkgs, {
+    scanMode: "all",
+    include: [],
+    exclude: ["**/packages/**"],
+  });
+  assert.deepEqual(
+    out.map((p) => p.relDir),
+    ["app"]
+  );
+});
+
+test("filterPackages include là allowlist áp sau scanMode", () => {
+  const pkgs = [pkg("app"), pkg("libs/ui"), pkg("libs/core")];
+  const out = filterPackages(pkgs, {
+    scanMode: "all",
+    include: ["libs/**"],
+    exclude: [],
+  });
+  assert.deepEqual(
+    out.map((p) => p.relDir),
+    ["libs/ui", "libs/core"]
+  );
+});

@@ -4,6 +4,21 @@
 
 <!-- Ghi thay đổi mới ở đây; `npm run release` sẽ tự gắn số version + ngày. -->
 
+### New
+- **Collapsed by default + remembered expand/collapse.** Package groups now
+  start collapsed, and each group's open/closed state is saved per-workspace, so
+  the next session restores exactly the groups you had open.
+- **Remove a package group** from the sidebar via the inline ✕ button on a
+  folder (stored per-workspace). Restore groups with "Show Hidden Package
+  Groups…" from the view title or by right-clicking in a `package.json`.
+- **Scan filtering** for monorepos. New settings:
+  - `scriptsSidebar.scanMode` (`all` / `roots` / `workspaces`, default `all`) —
+    `roots` hides workspace members declared in a parent's `workspaces` /
+    `pnpm-workspace.yaml`.
+  - `scriptsSidebar.include` / `scriptsSidebar.exclude` — glob allowlist/blocklist
+    matched against each `package.json` path relative to the workspace folder
+    (e.g. `exclude: ["**/packages/**"]`).
+
 ## [0.3.1]
 
 ### Changed
