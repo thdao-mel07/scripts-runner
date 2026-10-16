@@ -10,6 +10,8 @@ import {
   filterPackages,
   parseScriptsRunnerConfig,
   mergeFilterOptions,
+  applyOrder,
+  reorderList,
   type DiscoveredPackage,
   type PackageFilterOptions,
 } from "../src/logic";
@@ -222,4 +224,31 @@ test("mergeFilterOptions: exclude union không trùng lặp", () => {
     false
   );
   assert.deepEqual(merged.exclude, ["**/packages/**", "**/examples/**"]);
+});
+
+test("applyOrder: thứ tự lưu lên trước, còn lại A-Z", () => {
+  assert.deepEqual(
+    applyOrder(["build", "dev", "lint", "test"], ["dev", "build"]),
+    ["dev", "build", "lint", "test"]
+  );
+  // Chưa lưu gì -> toàn bộ A-Z
+  assert.deepEqual(applyOrder(["test", "build", "dev"], []), ["build", "dev", "test"]);
+  // Thứ tự lưu có script đã xoá -> bỏ qua
+  assert.deepEqual(applyOrder(["a", "b"], ["x", "b", "a"]), ["b", "a"]);
+});
+
+test("reorderList: chèn trước phần tử đích", () => {
+  assert.deepEqual(
+    reorderList(["a", "b", "c", "d"], ["d"], "b"),
+    ["a", "d", "b", "c"]
+  );
+  // before undefined -> xuống cuối
+  assert.deepEqual(reorderList(["a", "b", "c"], ["a"]), ["b", "c", "a"]);
+  // kéo nhiều, giữ thứ tự tương đối
+  assert.deepEqual(
+    reorderList(["a", "b", "c", "d"], ["c", "a"], "d"),
+    ["b", "a", "c", "d"]
+  );
+  // before là chính phần tử đang kéo -> xuống cuối (no-op an toàn)
+  assert.deepEqual(reorderList(["a", "b", "c"], ["b"], "b"), ["a", "c", "b"]);
 });

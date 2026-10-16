@@ -30,6 +30,7 @@
 - [x] Đọc cấu hình exclude/include/scanMode từ field scriptsRunner trong
   package.json gốc repo (merge với settings) — repo tự khai báo.
 - [x] Group mặc định thu gọn + nhớ trạng thái mở/đóng từng group (workspaceState).
+- [x] Kéo-thả sắp xếp thứ tự script trong folder (lưu workspaceState).
 
 ## Todo (tiếp theo)
 - [ ] Cache (bộ nhớ + workspaceState) để sidebar hiện tức thì khi mở lại source,

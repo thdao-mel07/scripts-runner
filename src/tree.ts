@@ -8,12 +8,23 @@ import {
   parsePnpmWorkspaceYaml,
   parseScriptsRunnerConfig,
   mergeFilterOptions,
+  applyOrder,
+  reorderList,
   type DiscoveredPackage,
   type ScanMode,
   type PackageFilterOptions,
 } from "./logic";
 import { isRunning } from "./running";
-import { isHidden, isFolderHidden, isFolderExpanded } from "./store";
+import {
+  isHidden,
+  isFolderHidden,
+  isFolderExpanded,
+  getOrder,
+  setOrder,
+} from "./store";
+
+/** MIME dùng cho kéo-thả sắp xếp script trong cùng folder. */
+const REORDER_MIME = "application/vnd.scriptsidebar.reorder";
 
 type ItemKind = "folder" | "script";
 
@@ -209,11 +220,27 @@ async function findPackageJsons(): Promise<PackageInfo[]> {
   return kept;
 }
 
-export class ScriptProvider implements vscode.TreeDataProvider<ScriptItem> {
+interface DragPayload {
+  pkg: string;
+  name: string;
+}
+
+export class ScriptProvider
+  implements
+    vscode.TreeDataProvider<ScriptItem>,
+    vscode.TreeDragAndDropController<ScriptItem>
+{
   private readonly _onDidChangeTreeData = new vscode.EventEmitter<
     ScriptItem | undefined | void
   >();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
+
+  // Kéo-thả: mang và nhận cùng 1 MIME nội bộ
+  readonly dragMimeTypes = [REORDER_MIME];
+  readonly dropMimeTypes = [REORDER_MIME];
+
+  /** Thứ tự script hiển thị gần nhất của mỗi folder (để tính vị trí khi thả). */
+  private readonly lastOrder = new Map<string, string[]>();
 
   refresh(): void {
     this._onDidChangeTreeData.fire();
@@ -221,6 +248,57 @@ export class ScriptProvider implements vscode.TreeDataProvider<ScriptItem> {
 
   getTreeItem(element: ScriptItem): vscode.TreeItem {
     return element;
+  }
+
+  /** Bắt đầu kéo: chỉ nhận script, ghi (folder, tên) vào DataTransfer. */
+  handleDrag(
+    source: readonly ScriptItem[],
+    dataTransfer: vscode.DataTransfer
+  ): void {
+    const payload: DragPayload[] = source
+      .filter((i) => i.kind === "script" && i.scriptName && i.packageJsonPath)
+      .map((i) => ({ pkg: i.packageJsonPath as string, name: i.scriptName as string }));
+    if (payload.length === 0) {
+      return;
+    }
+    dataTransfer.set(
+      REORDER_MIME,
+      new vscode.DataTransferItem(JSON.stringify(payload))
+    );
+  }
+
+  /** Thả: chỉ sắp xếp trong cùng folder; chèn trước script đích. */
+  async handleDrop(
+    target: ScriptItem | undefined,
+    dataTransfer: vscode.DataTransfer
+  ): Promise<void> {
+    if (!target?.packageJsonPath) {
+      return; // cần biết folder đích
+    }
+    const item = dataTransfer.get(REORDER_MIME);
+    if (!item) {
+      return;
+    }
+    let payload: DragPayload[];
+    try {
+      payload = JSON.parse(await item.asString()) as DragPayload[];
+    } catch {
+      return;
+    }
+    const folder = target.packageJsonPath;
+    // Chỉ nhận script cùng folder đích
+    const moving = payload
+      .filter((p) => p.pkg === folder)
+      .map((p) => p.name);
+    if (moving.length === 0) {
+      return;
+    }
+    const current = this.lastOrder.get(folder) ?? [];
+    // Thả lên script -> chèn trước; thả lên header folder -> xuống cuối
+    const before = target.kind === "script" ? target.scriptName : undefined;
+    const next = reorderList(current, moving, before);
+    await setOrder(folder, next);
+    this.refresh();
   }
 
   async getChildren(element?: ScriptItem): Promise<ScriptItem[]> {
@@ -264,12 +342,17 @@ export class ScriptProvider implements vscode.TreeDataProvider<ScriptItem> {
     return roots;
   }
 
-  /** Script hiển thị của 1 package (bỏ những cái đã ẩn), sắp xếp A-Z */
+  /**
+   * Script hiển thị của 1 package (bỏ cái đã ẩn), theo thứ tự đã lưu (kéo-thả)
+   * rồi A-Z cho phần còn lại. Lưu thứ tự hiện tại để dùng khi thả.
+   */
   private buildPackageChildren(pkg: PackageInfo): ScriptItem[] {
-    return Object.entries(pkg.scripts)
-      .filter(([n]) => !isHidden(scriptKey(pkg.dir, n)))
-      .map(([n, v]) => this.makeScriptItem(pkg, n, v))
-      .sort((a, b) => String(a.label).localeCompare(String(b.label)));
+    const visible = Object.keys(pkg.scripts).filter(
+      (n) => !isHidden(scriptKey(pkg.dir, n))
+    );
+    const ordered = applyOrder(visible, getOrder(pkg.packageJsonPath));
+    this.lastOrder.set(pkg.packageJsonPath, ordered);
+    return ordered.map((n) => this.makeScriptItem(pkg, n, pkg.scripts[n]));
   }
 
   private makeScriptItem(

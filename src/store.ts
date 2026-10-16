@@ -92,3 +92,24 @@ export async function setFolderExpanded(
   }
   await ctx.workspaceState.update(EXPANDED_FOLDERS_KEY, [...set]);
 }
+
+// ── Thứ tự ưu tiên script trong folder (kéo-thả) ────────────────────────────
+// Lưu map { packageJsonPath -> [scriptName theo thứ tự] } vào workspaceState.
+
+const ORDER_KEY = "scriptsSidebar.order";
+
+/** Thứ tự script đã lưu cho 1 folder (rỗng nếu chưa sắp xếp). */
+export function getOrder(packageJsonPath: string): string[] {
+  const all = ctx.workspaceState.get<Record<string, string[]>>(ORDER_KEY, {});
+  return all[packageJsonPath] ?? [];
+}
+
+/** Ghi thứ tự script cho 1 folder. */
+export async function setOrder(
+  packageJsonPath: string,
+  scriptNames: string[]
+): Promise<void> {
+  const all = ctx.workspaceState.get<Record<string, string[]>>(ORDER_KEY, {});
+  all[packageJsonPath] = scriptNames;
+  await ctx.workspaceState.update(ORDER_KEY, all);
+}

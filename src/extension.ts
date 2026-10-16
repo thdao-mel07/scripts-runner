@@ -147,6 +147,7 @@ export function activate(context: vscode.ExtensionContext): void {
   const treeView = vscode.window.createTreeView("scriptView", {
     treeDataProvider: provider,
     showCollapseAll: true,
+    dragAndDropController: provider,
   });
 
   // Nhớ trạng thái mở/đóng từng group để lần sau khởi động giữ nguyên.

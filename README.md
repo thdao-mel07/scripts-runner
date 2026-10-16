@@ -16,6 +16,9 @@ Every script in your `package.json` shows up in a dedicated **Scripts Runner** v
 ### 🏃 Runs in the terminal
 Scripts run in VS Code's integrated terminal, so you keep full logs and support for `watch`, dev servers, and interactive commands. The terminal tab is named after the script and is reused per script.
 
+### ↕️ Reorder scripts
+Drag a script (press and hold, then move) to reorder it within its folder — put the scripts you run most at the top. The order is saved per-workspace. Scripts with no custom order stay alphabetical.
+
 ### ⏹ Stop & running state
 A running script shows a spinner and a **stop** button so you always know what's live. Clicking a running script focuses its terminal instead of starting it again — no more accidentally restarting your dev server.
 

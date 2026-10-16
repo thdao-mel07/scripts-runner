@@ -7,6 +7,57 @@ export function scriptKey(cwd: string, scriptName: string): string {
   return `${cwd}::${scriptName}`;
 }
 
+/**
+ * Sắp xếp danh sách script theo thứ tự đã lưu (kéo-thả), phần chưa có trong
+ * thứ tự lưu thì xếp A–Z ở cuối. Mặc định (chưa lưu gì) = toàn bộ A–Z.
+ *
+ * @param names Các script hiện có (đã bỏ script ẩn).
+ * @param saved Thứ tự ưu tiên đã lưu cho folder (có thể chứa script đã xoá).
+ * @returns Danh sách script theo thứ tự hiển thị.
+ * @see {@linkcode reorderList}
+ */
+export function applyOrder(
+  names: readonly string[],
+  saved: readonly string[]
+): string[] {
+  const present = new Set(names);
+  const savedSet = new Set(saved);
+  const ordered = saved.filter((n) => present.has(n));
+  const rest = names
+    .filter((n) => !savedSet.has(n))
+    .sort((a, b) => a.localeCompare(b));
+  return [...ordered, ...rest];
+}
+
+/**
+ * Di chuyển các phần tử `moving` tới trước phần tử `before` trong `current`
+ * (giữ nguyên thứ tự tương đối của nhóm bị kéo). `before` không có / không tìm
+ * thấy → đưa xuống cuối.
+ *
+ * @param current Thứ tự hiện tại.
+ * @param moving Các phần tử đang kéo.
+ * @param before Phần tử đích để chèn vào trước; bỏ trống = cuối danh sách.
+ * @see {@linkcode applyOrder}
+ */
+export function reorderList(
+  current: readonly string[],
+  moving: readonly string[],
+  before?: string
+): string[] {
+  const movingSet = new Set(moving);
+  const rest = current.filter((n) => !movingSet.has(n));
+  // Giữ thứ tự tương đối của nhóm bị kéo theo thứ tự hiện tại
+  const orderedMoving = current.filter((n) => movingSet.has(n));
+  if (before === undefined || movingSet.has(before)) {
+    return [...rest, ...orderedMoving];
+  }
+  const idx = rest.indexOf(before);
+  if (idx === -1) {
+    return [...rest, ...orderedMoving];
+  }
+  return [...rest.slice(0, idx), ...orderedMoving, ...rest.slice(idx)];
+}
+
 /** Dựng lệnh chạy theo package manager */
 export function buildRunCommand(
   pm: PackageManager,

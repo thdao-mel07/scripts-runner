@@ -1,6 +1,14 @@
 # Active Context
 
 ## Thay đổi mới nhất (chưa publish)
+- THÊM kéo-thả sắp xếp script trong folder: ScriptProvider implement
+  TreeDragAndDropController (MIME application/vnd.scriptsidebar.reorder).
+  handleDrag ghi [{pkg,name}]; handleDrop chỉ nhận script cùng folder, chèn
+  trước script đích (thả lên header folder -> cuối). Lưu thứ tự workspaceState
+  key "scriptsSidebar.order" ({pkgPath:[names]}) qua store getOrder/setOrder.
+  logic.ts: applyOrder (thứ tự lưu trước, còn lại A-Z) + reorderList, có test.
+  tree.ts buildPackageChildren dùng applyOrder + cache lastOrder cho handleDrop.
+  extension.ts truyền dragAndDropController khi createTreeView.
 - THÊM đọc cấu hình từ package.json gốc repo: field `scriptsRunner`
   { scanMode?, include?, exclude? }. logic.ts có parseScriptsRunnerConfig +
   mergeFilterOptions (include/exclude union với settings; scanMode: settings
