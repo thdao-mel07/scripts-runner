@@ -4,6 +4,8 @@
 
 <!-- Ghi thay đổi mới ở đây; `npm run release` sẽ tự gắn số version + ngày. -->
 
+## [0.3.4] - 2026-10-16
+
 ### New
 - **Drag to reorder scripts** within a folder (press and hold, then move). The
   custom order is saved per-workspace; scripts without a custom order stay
