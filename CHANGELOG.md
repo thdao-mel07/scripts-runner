@@ -4,6 +4,8 @@
 
 <!-- Ghi thay đổi mới ở đây; `npm run release` sẽ tự gắn số version + ngày. -->
 
+## [0.3.3] - 2026-10-16
+
 ### New
 - **Per-repo config via `package.json`.** A repo can declare filtering in a
   `scriptsRunner` field of its root `package.json` (`scanMode` / `include` /
